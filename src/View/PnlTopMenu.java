@@ -1,5 +1,6 @@
 package View;
 
+import Base.DataB;
 import Control.ActOnPnlTopMenu;
 import Control.GUISeeming;
 import java.awt.Dimension;
@@ -9,15 +10,17 @@ import javax.swing.JPanel;
 
 public class PnlTopMenu extends JPanel{
     MnPreferences menu;
-    JButton btnNext, btnBack;
+    JButton btnNext, btnBack, btnInfo;
     ActOnPnlTopMenu act;
     int vGap = 2, hGap = 7;//hGap = horizontalGap, vGap = verticalGap
     FlowLayout compOrder;
+    PnlInfo pnlInfo = null;
 
     public PnlTopMenu(){
         this.setLayout(getCompOrder());
         this.add(getBtnBack());
         this.add(getBtnNext());
+        this.add(getBtnInfo());
         /*this.setPreferredSize(new Dimension(((int) GUIIdare.getGUIIDARE().getDimensionOfMainPanel().getWidth()),
                 ((int) GUIIdare.getGUIIDARE().getDimensionOfMainPanel().getHeight() / 14)));*/
         GUISeeming.appGUI(this);
@@ -57,5 +60,17 @@ public class PnlTopMenu extends JPanel{
             act = new ActOnPnlTopMenu(this);
         }
         return act;
+    }
+    public JButton getBtnInfo(){
+        if(btnInfo == null){
+            btnInfo = new JButton("Hakkında");
+            btnInfo.addActionListener(getAct());
+        }
+        return btnInfo;
+    }
+    public PnlInfo getPnlInfo(){
+        if(pnlInfo == null)
+            pnlInfo = new PnlInfo(DataB.getdBase().getInfoAboutSoftware());
+        return pnlInfo;
     }
 }

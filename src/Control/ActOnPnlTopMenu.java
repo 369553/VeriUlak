@@ -20,6 +20,9 @@ public class ActOnPnlTopMenu implements ActionListener{
         if(e.getSource() == pnl.getBtnBack()){
             IDARE.getIDARE().goToBack();
         }
+        if(e.getSource() == pnl.getBtnInfo()){
+            GUIIdare.getGUIIDARE().getActiveStructsIDARE().showSpecialGUI(pnl.getPnlInfo(), "Hakkında", "", 350, 270);
+        }
     }
 
 //ERİŞİM YÖNTEMLERİ:

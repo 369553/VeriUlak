@@ -3,6 +3,7 @@ package Base;
 import Control.IDARE;
 import Service.ClassStringDoubleConverter;
 import Service.CryptService;
+import Service.RWService;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,6 +18,7 @@ public class DataB {
     private ArrayList<String> liInterestingOnWrongDataForStringType;
     private String highLigthedColorForCellForeground = "#27196D";
     private String highLigthedColorForCellBackground = "#FF1919";
+    private ArrayList<HashMap<String, String>> infoAboutSoftware;
 
     private DataB(IDARE idare){
         this.idare = idare;
@@ -145,5 +147,15 @@ public class DataB {
             val.add("Tek nokta vektörü (One Hot Encoding) biçiminde kodlama");
         }
         return val;
+    }
+    public ArrayList<HashMap<String, String>> getInfoAboutSoftware() {
+        if(infoAboutSoftware == null){
+            infoAboutSoftware = new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> licenseOfPoi = new HashMap<String, String>();
+            licenseOfPoi.put("name", "Apache POI lisansı");
+            licenseOfPoi.put("text", RWService.getService().readDataAsText("licenseOfPoi.txt"));
+            infoAboutSoftware.add(licenseOfPoi);
+        }
+        return infoAboutSoftware;
     }
 }
