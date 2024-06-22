@@ -107,6 +107,7 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
                 this.colNumber += 1;// Sütun numarasını bir arttır
             }
             this.dataPack = IDARE.getIDARE().getColumnDetails(colNumber);// ESKİ YÖNTEM
+            System.err.println("colNumber : " + colNumber);
             dataPack.put("statistic", IDARE.getIDARE().getStatisticsForColumn(colNumber));// ESKİ YÖNTEM
             this.updateDataFor();// ESKİ YÖNTEM
             if(colNumber == 0)
@@ -217,10 +218,12 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
         SM.getBtnMain().updateFor((String) dataPack.get("name"), splitted[splitted.length - 1], (Integer) dataPack.get("size"));
         SM.getPnlBasic().changeContent(dataPack);
         if(!isCategorical){
+//            System.err.println("normal görünüyor");
             SM.getPnlStats().setHeadText("İstatistikler");
             SM.getPnlStats().changeContent((Statistic) dataPack.get("statistic"));
         }
         else{
+//            System.err.println("kategorik görünüyor");
             SM.getPnlStats().setHeadText("Kategorik istatistikler");
             SM.getPnlStats().changeContent((ArrayList<String>) dataPack.get("categoricalStatistic"));
         }

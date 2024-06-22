@@ -691,17 +691,17 @@ public class DataAnalyzer{
         }
         isCalculatedCouldCategorical = true;// Sütunların kategorik olup, olmadığı tahmini hesâplandı
     }
-    public boolean setColumnAsCategoricalWithOneHotVectorEncode(int columnIndex){
+    public boolean setColumnAsCategoricalWithOneHotVectorEncode(int columnIndex, boolean codeAsBoolean){
         if(dTypes == null)
             detectDataTypes(true);
         if(!isEmptyRatesIsUpdate)
             calculateEmptyRates();
         getUniqueAllColValues();
         Object[] original = getColumnValues(columnIndex).clone();
-        Object[][] converted = convCategoriesAsOneHotVector(columnIndex);
+        Object[][] converted = convCategoriesAsOneHotVector(columnIndex, codeAsBoolean);
         if(converted == null)
             return false;
-        Method m = getLocalMethod("convCategoriesAsOneHotVector", int.class);
+        Method m = getLocalMethod("convCategoriesAsOneHotVector", int.class, boolean.class);
         Object[][] dNew = MatrixFunctions.changeColumnData(data, converted[0], columnIndex);
         boolean nameAdded = false;
         boolean dataTypeAdded = false;
@@ -760,11 +760,13 @@ public class DataAnalyzer{
                 }
             }
         }
-        //BURADA KALINDI : Tüm kodlamalarda CategoricalColumn tipinde değişken oluşturan 
-        // addCategoricalData yöntemini tamâmla, ilgili yerlerde çağır
-        // İstatistik çağrıldığında kategorik istatistik döndür
-        // Bun
-        addCategoricalData(columnIndex, original, converted, Boolean.class, CategoricalVariable.CODING_TYPE.ONEHOTVECTOR);
+        Class codingType = Boolean.class;
+        if(!codeAsBoolean)
+            codingType = Integer.class;
+        // Bağlantılar kaydırılmalı:
+        if(converted.length > 1)// Yeni sütun ekleniyorsa sağdaki sütunların bağlantıları kaydırılmalı:
+            shiftConnectionWithVariableToRight(columnIndex + 1, converted.length - 1);
+        addCategoricalData(columnIndex, original, converted, codingType, CategoricalVariable.CODING_TYPE.ONEHOTVECTOR);
         if(m != null){
 //            System.out.println("Yöntem alındı");
             // İşlemi kaydet
@@ -1339,6 +1341,7 @@ public class DataAnalyzer{
         }
         
         // 'Sütun numarası -> kategorik değişken' haritasındaki sütun numaralarını tazele (eğer gerekiyorsa):
+        HashMap<Integer, CategoricalVariable> mapNewVar = (HashMap<Integer, CategoricalVariable>) mapCategoricalVars.clone();
         for(int colNo : getMapCategoricalVars().keySet()){
             int shiftLeft = 0;
             for(int sayac = 0; sayac < colIndexes.length; sayac++){// Kategorik verilerin sütun numarasıyla eşleştirildiği haritayı tazele
@@ -1347,8 +1350,8 @@ public class DataAnalyzer{
             }
             if(shiftLeft > 0){// Kaydırmak gerekiyorsa kaydır (sütun numarasını azaltarak haritaya yeniden koy; eski sütun numarasındaki eşleşmeyi kaldır)
                 CategoricalVariable var = getMapCategoricalVars().get(colNo);
-                mapCategoricalVars.remove(colNo);
-                mapCategoricalVars.put(colNo - shiftLeft, var);
+                mapNewVar.remove(colNo);
+                mapNewVar.put(colNo - shiftLeft, var);
                 if(var.getCodingType() == CategoricalVariable.CODING_TYPE.ONEHOTVECTOR){
                     for(int sayac = 1; sayac < var.getCategoryNumber(); sayac++){// Kategorinin diğer sütunları varsa o sütunları
                         Integer headIndexOfCategoricalCol = mapColIndexToCategoricalColIndex.get(colNo + sayac);
@@ -1357,6 +1360,7 @@ public class DataAnalyzer{
                 }
             }
         }
+        mapCategoricalVars = mapNewVar;
         //getMapColIndexToCategoricalColIndex haritasının anahtarları kaydırılmalı, eğer gerekiyorsa:
         HashMap<Integer, Integer> mapForNewIndexToHeadIndex = new HashMap<Integer, Integer>();
         for(int colNo : getMapColIndexToCategoricalColIndex().keySet()){
@@ -1527,11 +1531,12 @@ public class DataAnalyzer{
         }
         return value;
     }
-    private Object[][] convCategoriesAsOneHotVector(int colIndex){// 'null' değerli bir satır varsa, 'null' yeni bir sütun yapılmıyor
+    private Object[][] convCategoriesAsOneHotVector(int colIndex, boolean codeAsBoolean){// 'null' değerli bir satır varsa, 'null' yeni bir sütun yapılmıyor
         Object[] colD = getColumnValues(colIndex);
         if(!getAreUniqueValuesCalculated()[colIndex])
             uniqueColValues[colIndex] = calculateUniqueValues(colD);// Münferid değerler hesaplanmamışsa, hesapla
         Object[] categories = uniqueColValues[colIndex];
+        categories = removeEmptyString(categories);
         HashMap<Object, Integer> valToColOrder = new HashMap<Object, Integer>();
         int counter = 0;
         for(int sayac = 0; sayac < categories.length; sayac++){
@@ -1547,16 +1552,25 @@ public class DataAnalyzer{
             return false;
         */
         Object[][] values = new Object[valToColOrder.size()][rowCount];
+        Object bitOfTrue, bitOfFalse;
+        if(codeAsBoolean){
+            bitOfTrue = true;
+            bitOfFalse = false;
+        }
+        else{
+            bitOfTrue = 1;
+            bitOfFalse = 0;
+        }
         for(int sayac = 0; sayac < valToColOrder.size(); sayac++){
             for(int s2 = 0; s2 < rowCount; s2++){
                 if(colD[s2] == null){
-                    values[sayac][s2] = false;
+                    values[sayac][s2] = bitOfFalse;
                     continue;
                 }
                 if(valToColOrder.get(colD[s2]) == sayac)
-                    values[sayac][s2] = true;
+                    values[sayac][s2] = bitOfTrue;
                 else
-                    values[sayac][s2] = false;
+                    values[sayac][s2] = bitOfFalse;
             }
         }
         return values;
@@ -1733,7 +1747,7 @@ public class DataAnalyzer{
             editedRealData[rowNo] = null;
         }
 //        MatrixFunctions.printVector(editedRealData, true);
-        CategoricalVariable reCoded = new CategoricalVariable(var.getName(), var.getdType(), editedRealData, reCodedData, Boolean.class, CategoricalVariable.CODING_TYPE.ONEHOTVECTOR);
+        CategoricalVariable reCoded = new CategoricalVariable(var.getName(), var.getdType(), editedRealData, reCodedData, var.getTypeOfCodedUnitValues(), CategoricalVariable.CODING_TYPE.ONEHOTVECTOR);
        //////
         if(headColNo == deletingColIndex){// Kategorik değişkenin ilk sütunu siliniyorsa
             headColNo++;// yeni ilk sütun indisi sonraki indis olur
@@ -1748,7 +1762,46 @@ public class DataAnalyzer{
             getMapColIndexToCategoricalColIndex().remove((Integer) deletingColIndex);
         }
         getMapCategoricalVars().put(headColNo, reCoded);// Kategorik değişkeni işâret eden baş indisi yerleştir
-        
+    }
+    private Object[] removeEmptyString(Object[] data){
+        ArrayList<Object> values = new ArrayList<Object>();
+        for(int sayac = 0; sayac < data.length; sayac++){
+            if(String.valueOf(data[sayac]).isEmpty())
+                continue;
+            values.add(data[sayac]);
+        }
+        Object[] arrValues = new Object[values.size()];
+        values.toArray(arrValues);
+        return arrValues;
+    }
+    private void shiftConnectionWithVariableToRight(int indexOfFirstNewCol, int numberOfNewColumn){// indexOfFirstNewCol : Yeni sütunun eklenmeye başlandığı nokta, numberOfNewColumn : yeni sütun sayısı
+        HashMap<Integer, CategoricalVariable> mapVarNew = new HashMap<Integer, CategoricalVariable>();
+        HashMap<Integer, Integer> mapNewIndexToCategoricalColIndex = new HashMap<Integer, Integer>();
+        for(int sayac = 0; sayac < indexOfFirstNewCol; sayac++){// Kodlama sütununun solundaki değerleri yeni haritaya olduğu gib ekle
+            CategoricalVariable var = getMapCategoricalVars().get(sayac);
+            if(var != null){
+                mapVarNew.put(sayac, var);
+            }
+            Integer headIndexOfCurrentIndex = getMapColIndexToCategoricalColIndex().get(sayac);
+            if(headIndexOfCurrentIndex != null){
+                mapNewIndexToCategoricalColIndex.put(sayac, headIndexOfCurrentIndex);
+            }
+        }
+        // Aşağıdaki kod 'mapCategoricalVars' ve 'mapColIndexToCategoricalColIndex' haritalarının indis numaralarının tazelenmesi için..
+        for(int colNo : getMapCategoricalVars().keySet()){// Kodlanmış sütunun arasına yeni sütun kodlaması eklenemeyeceğinden, getMapCategoricalVars haritasının kaydırılması işlemini yaparken 'mapColIndexToCategoricalColIndex' haritasının tazelenmesi de yapılabilir
+            if(colNo >= indexOfFirstNewCol){
+                CategoricalVariable var = getMapCategoricalVars().get(colNo);
+                int len = var.getColCount();// Değişkenin sütun sayısı
+                int headIndexNew = colNo + numberOfNewColumn;
+                mapVarNew.put(headIndexNew, var);
+                for(int sayac = 1; sayac < len; sayac++){
+                    mapNewIndexToCategoricalColIndex.put(headIndexNew + sayac, headIndexNew);
+                }
+            }
+        }
+        mapCategoricalVars = mapVarNew;
+        mapColIndexToCategoricalColIndex = mapNewIndexToCategoricalColIndex;
+        // isColumnIsCategorical dizisi değiştirilmiyor; zîrâ bu değişiklik bu fonksiyonun çağrıldığı satırdan sonra çalışan 'addCategoricalData' fonksiyonunda yapılıyor
     }
 
 //ERİŞİM YÖNTEMLERİ:

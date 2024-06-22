@@ -658,7 +658,7 @@ public class Test{
                 return;
         */
 //        MatrixFunctions.printVector(anl.getDataTypes(), false);
-        boolean isSuccessful = anl.setColumnAsCategoricalWithOneHotVectorEncode(0);
+        boolean isSuccessful = anl.setColumnAsCategoricalWithOneHotVectorEncode(0, true);
         if(isSuccessful){
                     MatrixFunctions.printVector(anl.getDataTypes(), false);
 

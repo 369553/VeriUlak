@@ -105,6 +105,7 @@ public class PnlTable extends JPanel implements IPanel{
             }
         }
         else if(processType.equals("fillEmptyCells")){
+            data = (Object[][]) IDARE.getIDARE().getLastDataPack().get("data");
             colNumber = (int) IDARE.getIDARE().getLastDataPack().get("number");
             getMdlForTblData().setDataVector(data, columnNames);
         }

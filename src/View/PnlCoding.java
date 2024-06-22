@@ -26,6 +26,7 @@ public class PnlCoding extends JPanel{
     JPanel pnlConfigs;// Kodlama işlemi yapılandırma ayarı için panel
     JCheckBox chCodeTrueAsOne;// 'true' değerlerini '1' olarak kodlama seçeneği için seçilebilir arayüz elemanı
     JCheckBox chCode1AsTrue;// '1' değerlerini 'true' olarak kodlama seçeneği için seçilebilir arayüz elemanı
+    JCheckBox chCodeAsBoolean;// 'Tek nokta vektörü' biçiminde kodlamada hedef veri tipini belirtmek için arayüz elemanı
     PnlVarietyForOrderingTheList pnlSpecialConf;
 
     public PnlCoding(Object[] rawData, String headTextOfCol, Class dataType){
@@ -46,39 +47,36 @@ public class PnlCoding extends JPanel{
         getMdlForColData().setDataVector(asRow, new String[]{colName});
     }
    public void setConfigurationsOfCoding(String codingName){
-       boolean clear = false;
-       if(codingName == null)
-           clear = true;
-       else if(codingName.isEmpty())
-           clear = true;
-       getPnlConfigs().removeAll();// Konfigürasyon panelindeki her şeyi kaldır
-       if(clear)// Bir kodlama tipi gönderilmediyse işlemi bitir
-           return;
-       switch(codingName){
-           case "Bitsel kodlama" :{
+        boolean clear = false;
+        if(codingName == null)
+            clear = true;
+        else if(codingName.isEmpty())
+            clear = true;
+        getPnlConfigs().removeAll();// Konfigürasyon panelindeki her şeyi kaldır
+        if(clear)// Bir kodlama tipi gönderilmediyse işlemi bitir
+            return;
+        switch(codingName){
+            case "Bitsel kodlama" :{
                 if(getAct().getDataType() == Boolean.class)
                     Add.addComp(getPnlConfigs(), getChCodeTrueAs1(), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
                 else
                     Add.addComp(getPnlConfigs(), getChCode1AsTrue(), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
                 break;
-           }
-           case "Sıralı kodlama" :{
+            }
+            case "Sıralı kodlama" :{
                pnlSpecialConf = new PnlVarietyForOrderingTheList(getAct().getUniqueDataAsStringList(), "Sıralı kodlama dizilimi");
                Add.addComp(getPnlConfigs(), pnlSpecialConf, 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
                break;
-           }
-//           case "Tek nokta vektörü (One Hot Encoding) biçiminde kodlama" :{
-//               // Yapılacak bir yapılandırma ayarı yok
-//               break;
-//           }//           case "Tek nokta vektörü (One Hot Encoding) biçiminde kodlama" :{
-//               // Yapılacak bir yapılandırma ayarı yok
-//               break;
-//           }
-       }
-       GUISeeming.appGUI(this.getPnlConfigs());
-       getPnlConfigs().repaint();
-       this.setVisible(true);
-   }
+            }
+            case "Tek nokta vektörü (One Hot Encoding) biçiminde kodlama" :{
+                Add.addComp(getPnlConfigs(), getChCodeAsBoolean(), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+                break;
+            }
+        }
+        GUISeeming.appGUI(this.getPnlConfigs());
+        getPnlConfigs().repaint();
+        this.setVisible(true);
+    }
     // ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void addGUIElements(){
         Add.addComp(this, getLblTextOfDataType(), 0, 0, 1, 1, GridBagConstraints.LINE_START, GridBagConstraints.NONE, 0.0, 0.0);
@@ -161,6 +159,12 @@ public class PnlCoding extends JPanel{
             chCode1AsTrue.setSelected(true);
         }
         return chCode1AsTrue;
+    }
+    public JCheckBox getChCodeAsBoolean(){
+        if(chCodeAsBoolean == null){
+            chCodeAsBoolean = new JCheckBox("Boolean olarak kodla");
+        }
+        return chCodeAsBoolean;
     }
     public PnlVarietyForOrderingTheList getPnlSpecilConf(){
         return pnlSpecialConf;

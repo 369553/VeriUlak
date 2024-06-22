@@ -215,6 +215,10 @@ public class IDARE{
         // Veri değiştirme şu durumlarda söz konusudur : Integer -> Double'a , Double'dan Integer'a
                                                    // String -> Integer'a , String'ten Double'a
                   //!! : configurations ayarı kullanıcıya bırakılıyor, düzeltilmeli
+        if(getAnalyzer().getIsColumnIsCategorical()[colIndex]){// Sütun kategorik veri barındırıyorsa
+            ContactPanel.getContactPanel().showMessage("Kategorik olarak kodlanan sütunda bu işlem yapılamaz!", "Warning");
+            return false;
+        }
         boolean isSuccess = getAnalyzer().changeColumnDataType(colIndex, targetType, !changeDataIfNeed, configurations);
         if(isSuccess){
             getLastProccessInfo().clear();
@@ -230,9 +234,16 @@ public class IDARE{
         return isSuccess;
     }
     public boolean requestChangeDataType(int colIndex, Class targetType, boolean changeDataIfNeed){
+        if(getAnalyzer().getIsColumnIsCategorical()[colIndex]){// Sütun kategorik veri barındırıyorsa
+            System.err.println("gelidndid");
+        }
         return requestChangeDataType(colIndex, targetType, changeDataIfNeed, null);
     }
     public boolean requestFillEmptiesOnColumn(int colIndex, String policyName, Object value){
+        if(getAnalyzer().getIsColumnIsCategorical()[colIndex]){// Sütun kategorik veri barındırıyorsa
+            ContactPanel.getContactPanel().showMessage("Kategorik olarak kodlanan sütunda bu işlem yapılamaz!", "Warning");
+            return false;
+        }
         if(policyName == null)// Politika belirlenmediyse
             return false;
         boolean isSuccess = false;
@@ -335,7 +346,8 @@ public class IDARE{
                 break;
             }
             case "Tek nokta vektörü (One Hot Encoding) biçiminde kodlama" :{
-                isSuccess = getAnalyzer().setColumnAsCategoricalWithOneHotVectorEncode(colIndex);
+                boolean codeAsBoolean = (boolean) configurations.get("codeAsBoolean");
+                isSuccess = getAnalyzer().setColumnAsCategoricalWithOneHotVectorEncode(colIndex, codeAsBoolean);
                 isMultipleColumnAffected = true;
                 break;
             }

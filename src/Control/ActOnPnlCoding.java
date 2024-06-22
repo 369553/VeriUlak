@@ -46,6 +46,9 @@ public class ActOnPnlCoding implements ActionListener, ListSelectionListener{
                 order.toArray(arrOrder);
                 confs.put("order", arrOrder);
             }
+            else if(solutionName.equals("Tek nokta vektörü (One Hot Encoding) biçiminde kodlama")){
+                confs.put("codeAsBoolean", pnl.getChCodeAsBoolean().isSelected());
+            }
             else if(dType == Integer.class || dType == Double.class){
                 confs.put("code1AsTrue", pnl.getChCodeTrueAs1().isSelected());
             }
