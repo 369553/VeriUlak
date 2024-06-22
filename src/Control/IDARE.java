@@ -234,9 +234,6 @@ public class IDARE{
         return isSuccess;
     }
     public boolean requestChangeDataType(int colIndex, Class targetType, boolean changeDataIfNeed){
-        if(getAnalyzer().getIsColumnIsCategorical()[colIndex]){// Sütun kategorik veri barındırıyorsa
-            System.err.println("gelidndid");
-        }
         return requestChangeDataType(colIndex, targetType, changeDataIfNeed, null);
     }
     public boolean requestFillEmptiesOnColumn(int colIndex, String policyName, Object value){
@@ -305,6 +302,10 @@ public class IDARE{
         */
         boolean isSuccess = false;// İşlemin başarılı olmasını tâkiben yapılacak işlemlerin yapılabilmesi için başarıyı tâkip etmeli
         boolean isMultipleColumnAffected = false;// İşlem başarılı olduğunda birden fazla sütun etkilendiyse 'true' olmalıdır
+        if(getAnalyzer().getIsColumnIsCategorical()[colIndex]){// Sütun kategorik veri barındırıyorsa
+            ContactPanel.getContactPanel().showMessage("Kategorik değişken olarak kodlanan sütun yeniden kodlanamaz!", "Warning");
+            return false;
+        }
         if(colIndex < 0 ||colIndex >= analyzer.getColumnCount())
             return false;
         if(codingTypeName == null)

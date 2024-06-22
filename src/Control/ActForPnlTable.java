@@ -66,22 +66,26 @@ public class ActForPnlTable implements ActionListener, TableModelListener, Mouse
         if(((Component) objSource).getParent() == pnl.getPnlBottomInfo()){
             if(objSource == pnl.getPnlBottomInfo().getBtnEditAndSave()){
                 JButton btnEditAndSave = (JButton) objSource;
-                boolean[] arrIsEditableVlues = null;
+                boolean[] arrIsEditableValues = null;
                 if(isCanEditingTable){
                     boolean areSuccess = saveWithIDARE();
                     if(!areSuccess)// Eğer başarısız olunduysa düzenleme kısmını kapatma
                         return;
                     btnEditAndSave.setText("DÜZENLE");
-                    arrIsEditableVlues = MatrixFunctions.produceBooleanArray(pnl.getMdlForTblData().getColumnCount(), false);
+                    arrIsEditableValues = MatrixFunctions.produceBooleanArray(pnl.getMdlForTblData().getColumnCount(), false);
                     isCanEditingTable = false;
                 }
                 else{
-                    System.err.println("aqqekopegegewgwegwegwegewgwegewgewg");
-                    arrIsEditableVlues = MatrixFunctions.produceBooleanArray(pnl.getMdlForTblData().getColumnCount(), true);
+                    arrIsEditableValues = MatrixFunctions.produceBooleanArray(pnl.getMdlForTblData().getColumnCount(), true);
+                    boolean[] isCategorical = IDARE.getIDARE().getIsColumnCategorical();
+                    for(int sayac = 0; sayac < arrIsEditableValues.length; sayac++){
+                        if(isCategorical[sayac])
+                            arrIsEditableValues[sayac] = false;
+                    }
                     btnEditAndSave.setText("KAYDET");
                     isCanEditingTable = true;
                 }
-                pnl.setEditableOfCells(arrIsEditableVlues);
+                pnl.setEditableOfCells(arrIsEditableValues);
             }
         }
     }
