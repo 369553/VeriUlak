@@ -370,6 +370,12 @@ public class IDARE{
         return isSuccess;
     }
     public boolean requestNormalization(int colIndex, boolean isNormalization){// Eğer standardizasyon yapılmak isteniyorsa 'isNormalization' biti 'false' olarak verilmelidir
+        if(!getAnalyzer().getStatisticForColumn(colIndex).getIsNumber())// Sayı barındırmayan sütun normalize edilemez
+            return false;
+        if(getAnalyzer().getIsColumnIsCategorical()[colIndex]){// Kategorik sütun için bu işlem yapılamaz
+            ContactPanel.getContactPanel().showMessage("Kategorik olarak kodlanan sütun için bu işlem yapılamaz", "Warning");
+            return false;
+        }
         boolean isSuccess = false;
         isSuccess = getAnalyzer().normalizeOrStandardizeColumn(colIndex, isNormalization);
         if(isSuccess){

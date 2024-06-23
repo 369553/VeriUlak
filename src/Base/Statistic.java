@@ -262,10 +262,12 @@ public class Statistic{
         }
     }
     public void roundDistributionStatisticValues(){// Dağılım ölçülerini yuvarlayarak tazele
-        stdDeviation = MathFuncs.roundNumber(stdDeviation, numberAfterDot);
-        variation = MathFuncs.roundNumber(variation, numberAfterDot);
-        skewness = MathFuncs.roundNumber(skewness, numberAfterDot);
-        stickiness = MathFuncs.roundNumber(stickiness, numberAfterDot);
+        if(isNumber){
+            stdDeviation = MathFuncs.roundNumber(stdDeviation, numberAfterDot);
+            variation = MathFuncs.roundNumber(variation, numberAfterDot);
+            skewness = MathFuncs.roundNumber(skewness, numberAfterDot);
+            stickiness = MathFuncs.roundNumber(stickiness, numberAfterDot);
+        }
     }
 
 //ERİŞİM YÖNTEMLERİ:

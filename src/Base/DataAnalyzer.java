@@ -1603,7 +1603,8 @@ public class DataAnalyzer{
         if(statistics == null)
             statistics = new Statistic[colCount];
         statistics[colNumber] = Statistic.calculateBasicStatistics(colData, getDataTypes()[colNumber]);
-        Statistic.calculateDistributionMetrics(statistics[colNumber], colData);
+        if(!getIsColumnIsCategorical()[colNumber])
+            Statistic.calculateDistributionMetrics(statistics[colNumber], colData);
         getIsStatisticIsUpdate()[colNumber] = true;
     }
     private boolean getIsNumber(int colNumber){
