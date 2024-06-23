@@ -502,40 +502,6 @@ public class MatrixFunctions{
         }
         return res;
     }
-    public static double rollingDoubleValueDependDigitNumber(double value, int rollDigitNumber){// BELKİ İYİLEŞTİRİLEBİLİR FONKSİYON : Double'a veyâ ikilik sayıya çevrilerek daha performanslı şekilde yapılabilir mi, araştır
-        String[] sValAsSplitted = String.valueOf(value).split("\\.");
-        StringBuilder strbuiPreparing = new StringBuilder(sValAsSplitted[0]);
-        int lenOfAfterDot = sValAsSplitted[1].length();
-        strbuiPreparing.append('.');
-        int len = lenOfAfterDot;
-        if(rollDigitNumber < len)
-            len = rollDigitNumber;
-        for(int s2 = 0; s2 < len; s2++){
-            if(s2 == len - 1){// Son basamak
-                int lastOne = Integer.valueOf(String.valueOf(sValAsSplitted[1].charAt(s2)));
-                System.out.println("lastOne : " + lastOne);
-                if(sValAsSplitted[1].length() > s2 + 1){// Buradan sonra basamak varsa
-                    int roll = Integer.valueOf(String.valueOf(sValAsSplitted[1].charAt(s2 + 1)));
-                    System.out.println("after lastOne : " + roll);
-                    if(roll >= 5)// Bu rakama göre önceki basamağı yuvarla
-                        lastOne++;
-                }
-                strbuiPreparing.append(lastOne);
-                break;
-            }
-            else// Son rakama kadar olan rakamları ekle
-                strbuiPreparing.append(sValAsSplitted[1].charAt(s2));
-        }
-        return Double.valueOf(strbuiPreparing.toString());
-    }
-    public static int rollDoubleToInteger(double value, boolean rollToUp, boolean rollToDown){// Her iki bit bayrağı da true ise normal yuvarlama yapılır
-        String[] sValSplitted = String.valueOf(value).split("\\.");
-        int firstNumberAfterDot = Integer.valueOf(String.valueOf(sValSplitted[1].charAt(0)));
-        int numberBeforeDot = Integer.valueOf(sValSplitted[0]);
-        if((rollToUp && firstNumberAfterDot >= 5) || rollToUp && !rollToDown)
-            numberBeforeDot++;
-        return numberBeforeDot;
-    }
     public static<T> T[] exchangeElementOnTheList(T[] data, Class<T[]> classOfDataArray, int beginIndex, int targetIndex){// Dizideki iki elemanın yerini değiştir
         /*
             T[} data : Veri

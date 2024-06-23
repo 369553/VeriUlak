@@ -1,5 +1,6 @@
 package Base;
 
+import Service.MathFuncs;
 import Service.MatrixFunctions;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -796,7 +797,7 @@ public class DataAnalyzer{
                                 if(rollToUp != null && rollToDown != null){
                                     Object[] secondRes = convDataType(uniqueColValues[colIndex][sayac], Double.class);
                                     if((boolean) secondRes[0]){
-                                        uniqueColValues[colIndex][sayac] = MatrixFunctions.rollDoubleToInteger((double) secondRes[1], (boolean) rollToUp, (boolean)  rollToDown);
+                                        uniqueColValues[colIndex][sayac] = MathFuncs.rollDoubleToInteger((double) secondRes[1], (boolean) rollToUp, (boolean)  rollToDown);
                                         continue;
                                     }
                                 }
@@ -1010,7 +1011,7 @@ public class DataAnalyzer{
                             if(!(boolean) results[0])
                                 isSuccess = false;
                             else{// Double'a dönüşümün başarılı olduğu durum
-                                colVals[sayac] = MatrixFunctions.rollDoubleToInteger((double) results[1], (boolean) rollUp, (boolean) rollDown);
+                                colVals[sayac] = MathFuncs.rollDoubleToInteger((double) results[1], (boolean) rollUp, (boolean) rollDown);
                                 continue;
                             }
                         }
@@ -1054,7 +1055,7 @@ public class DataAnalyzer{
                             }
                             if(!dontRoll){
                             if(colVals[sayac] != null)
-                                colVals[sayac] = MatrixFunctions.rollingDoubleValueDependDigitNumber((double) colVals[sayac], (int) rollDigitNumber);
+                                colVals[sayac] = MathFuncs.roundNumber((double) colVals[sayac], (int) rollDigitNumber);
                             }
                         }
                     }
@@ -1671,7 +1672,7 @@ public class DataAnalyzer{
         if(dTypes[colIndex] != Double.class)
             return;
         for(int sayac = 0; sayac < rowCount; sayac++){
-            data[sayac][colIndex] = MatrixFunctions.rollingDoubleValueDependDigitNumber((double) data[sayac][colIndex], digitNumber);
+            data[sayac][colIndex] = MathFuncs.roundNumber((double) data[sayac][colIndex], digitNumber);
         }
         isColumnDetailsIsUpdate = false;// Sütun detay bilgileri 'taze değil' olarak işâretleniyor
         areUniqueValuesCalculated[colIndex] = false;// Münferid değerler 'hesaplanmadı' olarak işâretleniyor
