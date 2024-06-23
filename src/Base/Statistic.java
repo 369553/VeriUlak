@@ -1,5 +1,6 @@
 package Base;
 
+import Service.MathFuncs;
 import Service.MatrixFunctions;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class Statistic{
     private HashMap<String, Integer> categoricCounter = new HashMap<String, Integer>();// Mod hesâplanırken kullanılan bir değişken
     private ArrayList<Double> decrementFromRowNextToRowBack;// Sayısal verideki değişimi algılayabilmek için
     private boolean isDistsCalculated = false;
+    private int numberAfterDot = 6;// 'Double' ve 'Float' veri tiplerinde noktadan sonraki varsayılan basamak sayısı (veriyi değiştirmek için değil, istatistikleri hesâplarken kullanmak için)
 //    private HashMap<String, Boolean> whichOnesCalculated;// Hangi değerlerin hesaplandığını tutan bitsel harita
 
     private Statistic(){
@@ -49,7 +51,10 @@ public class Statistic{
 
 //İŞLEM YÖNTEMLERİ:
     //SINIF YÖNTEMLERİ:
-    public static Statistic calculateBasicStatistics(Object[] data, Class dataType){// Noktalı sayı tipinden olan sayılarda verinin sürekli veyâ ayrık olup, olmadığına bakılmıyor; doğrudan 'ayrık' olarak işâretleniyor
+    public static Statistic calculateBasicStatistics(Object[] data, Class dataType){
+        return calculateBasicStatistics(data, dataType, 6, true);
+    }
+    public static Statistic calculateBasicStatistics(Object[] data, Class dataType, int numberAfterDotForDoubleOrFloat, boolean roundValues){// Noktalı sayı tipinden olan sayılarda verinin sürekli veyâ ayrık olup, olmadığına bakılmıyor; doğrudan 'ayrık' olarak işâretleniyor
         double totalizerForMean = 0.0;
         Statistic st = new Statistic();
         st.decrementFromRowNextToRowBack = new ArrayList<Double>();
@@ -57,6 +62,7 @@ public class Statistic{
             return null;
         data = MatrixFunctions.deleteNullValues(data);// null olan veriler çıkarılır
         st.size = data.length;
+        st.numberAfterDot = numberAfterDotForDoubleOrFloat;
         // VERİ TİPİNİ ALGILAMA:
         if(dataType == Number.class)
             st.isNumber = true;
@@ -95,7 +101,6 @@ public class Statistic{
                         st.min = valAsDouble;
                     if(valAsDouble > st.max)
                         st.max = valAsDouble;
-                    System.out.println(totalizerForMean + "(totalizerForMean) += " + valAsDouble + "\t= " + (totalizerForMean + valAsDouble));
                     totalizerForMean += valAsDouble;
                     if(sayac > 0){
                         double decr = valAsDouble - Double.valueOf(String.valueOf(data[sayac]));
@@ -148,9 +153,14 @@ public class Statistic{
             
         }*/
         }
+        if(st.isNumber && roundValues)
+            st.roundBasicStatisticValues();
         return st;
     }
     public static void calculateDistributionMetrics(Statistic stats, Object[] data){
+        calculateDistributionMetrics(stats, data, true);
+    }
+    public static void calculateDistributionMetrics(Statistic stats, Object[] data, boolean roundValues){
         //Önce veri içerisindeki 'null' değerleri çıkartalım, bi iznillâh:
         data = MatrixFunctions.deleteNullValues(data);
         if(!stats.isNumber)// Yalnızca sayısal veriler için dağılım ölçüleri hesâplanıyor
@@ -173,6 +183,8 @@ public class Statistic{
             varForTotal+= Math.pow(vals[sayac] - stats.mean, 4);
         }
         stats.stickiness = (varForTotal / stats.size) / Math.pow(stats.stdDeviation, 4) - 3;
+        if(stats.isNumber && roundValues)
+            stats.roundDistributionStatisticValues();
     }
     public static ArrayList<String> getStatisticAsList(Statistic stats){
         if(stats == null)
@@ -236,6 +248,24 @@ public class Statistic{
             }
         }
         return isIt;
+    }
+    public void roundBasicStatisticValues(){// Temel istatistikleri yuvarlayarak tazele
+        mean = MathFuncs.roundNumber(mean, numberAfterDot);
+        if(isContinuous){// Sürekli sayılar için olan istatistikleri yuvarlayarak tazele
+            min = MathFuncs.roundNumber(min, numberAfterDot);
+            max = MathFuncs.roundNumber(max, numberAfterDot);
+            range = MathFuncs.roundNumber(range, numberAfterDot);
+            modValue = MathFuncs.roundNumber((Double) modValue, numberAfterDot);
+            ArrayList<Double> liRounded = new ArrayList<Double>();
+            decrementFromRowNextToRowBack.forEach((number)->{liRounded.add(MathFuncs.roundNumber(number, numberAfterDot));});
+            decrementFromRowNextToRowBack = liRounded;
+        }
+    }
+    public void roundDistributionStatisticValues(){// Dağılım ölçülerini yuvarlayarak tazele
+        stdDeviation = MathFuncs.roundNumber(stdDeviation, numberAfterDot);
+        variation = MathFuncs.roundNumber(variation, numberAfterDot);
+        skewness = MathFuncs.roundNumber(skewness, numberAfterDot);
+        stickiness = MathFuncs.roundNumber(stickiness, numberAfterDot);
     }
 
 //ERİŞİM YÖNTEMLERİ:
