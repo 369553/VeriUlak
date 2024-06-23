@@ -9,6 +9,7 @@ import View.PnlChangeDataType;
 import View.PnlCoding;
 import View.PnlInterestWrongData;
 import View.PnlManipulations;
+import View.PnlNormalization;
 import View.PnlSideMenu;
 import View.PnlStatistic;
 import java.awt.Component;
@@ -203,6 +204,13 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
                 updateDataFor();
             }
         }
+        else if(processType.equals("normalizeColumn")){
+            int colNumber = (int) IDARE.getIDARE().getLastProccessInfo().get("colNumber");
+            if(this.colNumber == colNumber){
+                this.dataPack = IDARE.getIDARE().getLastDataPack();
+                updateDataFor();
+            }
+        }
     }
     public void updateDataFor(){
         if(this.dataPack == null){
@@ -278,6 +286,9 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
     private void openPnlCoding(){// Sütunları kodlamak için paneli aç
         GUIIdare.getGUIIDARE().getActiveStructsIDARE().showSpecialGUI(new PnlCoding(IDARE.getIDARE().getColumnData(colNumber),  (String) this.getDataPack().get("name"), ClassStringDoubleConverter.getService().getClassFromFullName((String) dataPack.get("dataType"))), "Sütunları kodla", "", 450, 370);
     }
+    private void openPnlNormalization(){// Sayısal veriler için normalizasyon ve standardizasyon işlemi
+        GUIIdare.getGUIIDARE().getActiveStructsIDARE().showSpecialGUI(new PnlNormalization(colNumber), "Normalizasyon ve standardizasyon", "", 390, 310);
+    }
 
 //ERİŞİM YÖNTEMLERİ:
     public boolean getIsNumber(){
@@ -293,6 +304,7 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
                  mapMethodsFromManipulations.put("Veri tipini dönüştür", this.getClass().getDeclaredMethod("openPnlChangeDataType", null));
                  mapMethodsFromManipulations.put("Eksik verilerle ilgilen", this.getClass().getDeclaredMethod("openPnlInterestWrongData", null));
                  mapMethodsFromManipulations.put("Sütunu kodla", this.getClass().getDeclaredMethod("openPnlCoding", null));
+                 mapMethodsFromManipulations.put("Normalizasyon ve standardizasyon", this.getClass().getDeclaredMethod("openPnlNormalization", null));
             }
            catch(NoSuchMethodException | SecurityException exc){
                System.err.println("yöntem alınırken hatâ alındı : " + exc.toString());

@@ -1,16 +1,15 @@
 package Control;
 
 import View.BtnColumn;
-import View.PnlManipulations;
 import View.PnlVariety;
 import View.PnlVarietyForButton;
+import View.PnlVarietyForText;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -399,6 +398,7 @@ public class GUISeeming{
     private static boolean appGUIForSpecialContainers(Component component){//appGUI()'yı tüm alt sınıflar için uygula; sadece bu container için uygulama mâhiyyetinde bir fonksiyon hâzırla
         boolean isVarietyClass = false;
         boolean isVarietyForButtonClass = false;
+        boolean isVarietyForTextClass = false;
         switch(component.getClass().getName()){
             case "View.PnlTopMenu" :{
                 JPanel panel = (JPanel) component;
@@ -458,9 +458,15 @@ public class GUISeeming{
             }
             case "View.PnlVariety" :{
                 isVarietyClass = true;
+                break;
             }
             case "View.PnlVarietyForButton" :{
                 isVarietyForButtonClass = true;
+                break;
+            }
+            case "View.PnlVarietyForText" :{
+                isVarietyForTextClass = true;
+                break;
             }
             /*case "Views.C" :{
                 GUISeeming.appGUI((Container) component);
@@ -498,6 +504,18 @@ public class GUISeeming{
                 if(comp == pnl.getPnlButtons())
                     appGUI((JPanel) comp);
                 else
+                    appGUI(comp);
+            }
+            appGUI((Component) pnl.getBtnShowHide());
+            pnl.getBtnShowHide().setFont(seeming.fontUI.deriveFont(22.0f));
+            return true;
+        }
+        else if(isVarietyForTextClass){
+            PnlVarietyForText pnl = (PnlVarietyForText) component;
+            pnl.setBorder(GUISeeming.getComponentBorder(true, true, true, true, 1));
+            pnl.setBackground(Color.decode(seeming.hexBackgroundColor));
+            component.setFont(seeming.fontUI);
+            for(Component comp : pnl.getComponents()){
                     appGUI(comp);
             }
             appGUI((Component) pnl.getBtnShowHide());

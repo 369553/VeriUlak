@@ -19,6 +19,8 @@ public class DataB {
     private String highLigthedColorForCellForeground = "#27196D";
     private String highLigthedColorForCellBackground = "#FF1919";
     private ArrayList<HashMap<String, String>> infoAboutSoftware;
+    private ArrayList<String> liSolutionsOfNormalization;
+    private HashMap<String, String> LiInfoAboutSolutionsOfNormalization;
 
     private DataB(IDARE idare){
         this.idare = idare;
@@ -157,5 +159,28 @@ public class DataB {
             infoAboutSoftware.add(licenseOfPoi);
         }
         return infoAboutSoftware;
+    }
+    public ArrayList<String> getLiSolutionsOfNormalization(){
+        if(liSolutionsOfNormalization == null){
+            liSolutionsOfNormalization = new ArrayList<String>();
+            liSolutionsOfNormalization.add("Normalizasyon");
+            liSolutionsOfNormalization.add("Standardizasyon");
+        }
+        return liSolutionsOfNormalization;
+    }
+    public HashMap<String, String> getMapSolutionOfNormalizationToInfo(){
+        if(LiInfoAboutSolutionsOfNormalization == null){
+            LiInfoAboutSolutionsOfNormalization = new HashMap<String, String>();
+            LiInfoAboutSolutionsOfNormalization.put("Normalizasyon", "Normalizasyon....");
+            LiInfoAboutSolutionsOfNormalization.put("Standardizasyon", "Standardizasyon....");
+        }
+        return LiInfoAboutSolutionsOfNormalization;
+    }
+    public String getInfoAboutSolutionOfNormalization(String solutionName){
+        if(solutionName == null)
+            return "";
+        if(solutionName.isEmpty())
+            return "";
+        return getMapSolutionOfNormalizationToInfo().get(solutionName);
     }
 }

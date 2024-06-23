@@ -369,6 +369,21 @@ public class IDARE{
         }
         return isSuccess;
     }
+    public boolean requestNormalization(int colIndex, boolean isNormalization){// Eğer standardizasyon yapılmak isteniyorsa 'isNormalization' biti 'false' olarak verilmelidir
+        boolean isSuccess = false;
+        isSuccess = getAnalyzer().normalizeOrStandardizeColumn(colIndex, isNormalization);
+        if(isSuccess){
+            getLastProccessInfo().clear();
+            getLastDataPack().clear();
+            lastProccessInfo.put("colNumber", colIndex);
+            lastProccessInfo.put("processType", "normalizeColumn");
+            lastDataPack = (HashMap<String, Object>) analyzer.getColumnDetails(colIndex).clone();
+            lastDataPack.put("data", analyzer.getData());
+            lastDataPack.put("statistic", analyzer.getStatisticForColumn(colIndex));
+            guiIDARE.updateDataOnActivePanels();
+        }
+        return isSuccess;
+    }
     public boolean[] getIsColumnCategorical(){
         return getAnalyzer().getIsColumnIsCategorical();
     }

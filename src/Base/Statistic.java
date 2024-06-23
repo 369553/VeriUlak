@@ -55,7 +55,7 @@ public class Statistic{
         st.decrementFromRowNextToRowBack = new ArrayList<Double>();
         if(data == null)
             return null;
-        data = MatrixFunctions.deleteNullValues(data);
+        data = MatrixFunctions.deleteNullValues(data);// null olan veriler çıkarılır
         st.size = data.length;
         // VERİ TİPİNİ ALGILAMA:
         if(dataType == Number.class)
@@ -95,6 +95,7 @@ public class Statistic{
                         st.min = valAsDouble;
                     if(valAsDouble > st.max)
                         st.max = valAsDouble;
+                    System.out.println(totalizerForMean + "(totalizerForMean) += " + valAsDouble + "\t= " + (totalizerForMean + valAsDouble));
                     totalizerForMean += valAsDouble;
                     if(sayac > 0){
                         double decr = valAsDouble - Double.valueOf(String.valueOf(data[sayac]));

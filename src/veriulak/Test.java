@@ -9,6 +9,7 @@ import View.PnlTable;
 import View.PnlVariety;
 import View.PnlVarietyForButton;
 import View.PnlVarietyForOrderingTheList;
+import View.PnlVarietyForText;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -1308,6 +1309,69 @@ public class Test{
             System.out.println("Veri tipi noktalı sayı iken nesne olarak kontrol edilirken değerleri kontrol ediliyor");
         else
             System.err.println("Veri tipi noktalı iken nesne olarak kontrol edildiğinde değerler kontrol edilmiyor");
+    }
+    public void testPnlVarietyForText(){
+        JFrame fr = new JFrame("Deneme");
+        fr.setPreferredSize(new Dimension(700, 200));
+        fr.setSize(700, 200);
+        fr.setLayout(new BorderLayout(5, 5));
+        String content = "Veri tipleri arasındaki dönüşümler\n" +
+"String->    Integer : 'Integer.valueOf()' ile doğrudan (Eğer veri tamsayı ise)\n" +
+"            Double : 'Double.valueOf()' ile doğrudan\n" +
+"            Boolean : 'Boolean.valueOf()' ile doğrudan\n" +
+"            \n" +
+"Integer->   String : 'String.valueOf()' ile doğrudan\n" +
+"            Double : 'Double.valueOf()' ile doğrudan\n" +
+"\n" +
+"Double->    String : 'String.valueOf()' ile doğrudan\n" +
+"            Integer : 'String.valueOf()' ile doğrudan yapılamıyor\n" +
+"\n" +
+"Boolean->   String : 'String.valueOf()' ile doğrudan\n" +
+"            Integer(Kodlama ile dönüşebilir(true = 1, false = 0 gibi))\n" +
+"            Double(Kodlama ile dönüşebilir(true = 1.0, false = 0.0 gibi))\n" +
+"            \n" +
+"İKİ TEMEL MESELE:\n" +
+"1) Double'dan Integer'a dönüşüm için ek fonksiyon lazım\n" +
+"2) \"3.0\" metnini Integer'a dönüştürmek için aynı ek fonksiyon lazım\n" +
+"\n" +
+"\n" +
+"\n" +
+"target == Double -> tüm dönüşüm için 'Double.valueOf' kâfî (Boolean hâricî dönüşümler için)\n" +
+"target == String -> tüm dönüşüm için 'String.valueOf' kâfî\n" +
+"\n" +
+"String\n" +
+"\n" +
+"Integer --> Double\n" +
+"Double --> Integer\n" +
+"\n" +
+"\n" +
+"\n" +
+"\n" +
+"Double -> String : Tamâm\n" +
+"Double -> Integer : Tamâm\n" +
+"Double -> Boolean : Tamâm (olumsuz)\n" +
+"\n" +
+"\n" +
+"Integer -> Double : Tamâm\n" +
+"Integer -> Boolean : Tamâm (olumsuz)\n" +
+"Integer -> String : Tamâm\n" +
+"\n" +
+"\n" +
+"Boolean -> Integer : Tamâm (olumsuz)\n" +
+"Boolean -> Double : Tamâm (olumsuz)\n" +
+"Boolean -> String : Tamâm\n" +
+"\n" +
+"\n" +
+"String -> Integer : Tamâm\n" +
+"String -> Double : Tamâm\n" +
+"String -> Boolean : Tamâm\n" +
+"\n" +
+"Gönderilen verinin tipi değişiyor mu?";
+        PnlVarietyForText pnl = new PnlVarietyForText("Bismillâh", content);
+//        pnl.setPreferredSize(new Dimension(220, 330));
+        fr.add(pnl, BorderLayout.CENTER);
+        fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        fr.setVisible(true);
     }
     public void clear() throws AWTException {
         Robot rob = new Robot();

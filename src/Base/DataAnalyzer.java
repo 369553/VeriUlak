@@ -1374,6 +1374,15 @@ public class DataAnalyzer{
         }
         this.mapColIndexToCategoricalColIndex = mapForNewIndexToHeadIndex;// Yeni indis -> kategorik baş indisi haritasını sistemdeki ile değiştir
     }
+    public boolean normalizeOrStandardizeColumn(int colIndex, boolean isNormalize){
+        if(colIndex < 0 || colIndex >= colCount)// Hatâli sütun numarası verildiyse
+            return false;
+        if(getIsColumnIsCategorical()[colIndex])// Kategorik değişken olarak kodlanmış bir sütunun numarası verildiyse
+            return false;
+        if(!getIsNumber(colIndex))// Sayısal veri barındırmayan bir sütun numarası verildiyse
+            return false;
+        return normalizeOrStandardize(colIndex, isNormalize);
+    }
     private void findEmptyRowsAndCols(){//Tamâmen 'null' olan satırlar tespit edilmiyor; bunlar 'basicAnalyze()' kısmında önceki adımda silindi
         if(isEmptyCountNumbersUpdate)
             return;
@@ -1802,6 +1811,36 @@ public class DataAnalyzer{
         mapCategoricalVars = mapVarNew;
         mapColIndexToCategoricalColIndex = mapNewIndexToCategoricalColIndex;
         // isColumnIsCategorical dizisi değiştirilmiyor; zîrâ bu değişiklik bu fonksiyonun çağrıldığı satırdan sonra çalışan 'addCategoricalData' fonksiyonunda yapılıyor
+    }
+    private boolean normalizeOrStandardize(int colIndex, boolean isNormalize){// Verilerin normalize veyâ standardize edilmesi için kullanılır;
+        Statistic stats;
+        boolean isSuccess = false;
+        if(dTypes[colIndex] != Double.class){// Veri tipi 'double' değilse, dönüştür
+            changeColumnDataType(colIndex, Double.class, true, null);
+            if(!isSuccess)
+                return false;
+        }
+        stats = getStatisticForColumn(colIndex);
+        if(stats.size <= 1)// Sütunda dolu veri yoksa veyâ bir tâne varsa
+            return false;
+        double base;
+        if(isNormalize)// İşlem normalizasyon ise payda = xmax - xmin
+            base = stats.max - stats.min;
+        else
+            base = stats.stdDeviation;// İşlem standardizasyon ise payda = standart sapma
+        for(int sayac = 0; sayac < rowCount; sayac++){
+            if(data[sayac][colIndex] == null)// 'null' olan satırları atla
+                continue;
+            double upNumber;
+            if(isNormalize)// İşlem normalizasyon ise pay = x - xmin
+                upNumber = ((Double) data[sayac][colIndex] - stats.min);
+            else// İşlem standardizasyon ise pay = x - ortalama
+                upNumber = ((Double) data[sayac][colIndex] - stats.mean);
+            data[sayac][colIndex] = (Double) (upNumber / base);
+        }
+        getIsStatisticIsUpdate()[colIndex] = false;
+        getAreUniqueValuesCalculated()[colIndex] = false;
+        return true;
     }
 
 //ERİŞİM YÖNTEMLERİ:

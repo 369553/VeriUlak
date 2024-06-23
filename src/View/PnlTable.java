@@ -127,6 +127,13 @@ public class PnlTable extends JPanel implements IPanel{
             data = (Object[][]) IDARE.getIDARE().getLastDataPack().get("data");
             getMdlForTblData().setDataVector(data, columnNames);
         }
+        else if(processType.equals("normalizeColumn")){
+            String strDataType = (String) IDARE.getIDARE().getLastDataPack().get("dataType");
+            colNumber = (int) IDARE.getIDARE().getLastDataPack().get("number");
+            this.typesOfColumns[colNumber] = ClassStringDoubleConverter.getService().getClassFromFullName(strDataType);
+            data = (Object[][]) IDARE.getIDARE().getLastDataPack().get("data");
+            getMdlForTblData().setDataVector(data, columnNames);
+        }
     }
 
 //ERİŞİM YÖNTEMLERİ:

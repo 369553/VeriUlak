@@ -51,6 +51,7 @@ public class VeriUlak{
 //        test.testCategoricalVariableClassWithOrdinalCodingType();
 //        test.testCategoricalVariableClassWithOneHotVectorCodingType();
 //        test.testCategoricalVariableClassWithBinomialCodingType();
+//        test.testPnlVarietyForText();
         
     }
     public static void runTestsOrdered(){
