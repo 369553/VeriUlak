@@ -1827,9 +1827,11 @@ public class DataAnalyzer{
             return false;
         double base;
         if(isNormalize)// İşlem normalizasyon ise payda = xmax - xmin
-            base = stats.max - stats.min;
+            base = stats.range;
         else
             base = stats.stdDeviation;// İşlem standardizasyon ise payda = standart sapma
+        if(base == Double.NaN || base == Double.NEGATIVE_INFINITY || base == Double.POSITIVE_INFINITY)// Payda sıfırsa işleme devam edilemez!
+            return false;
         for(int sayac = 0; sayac < rowCount; sayac++){
             if(data[sayac][colIndex] == null)// 'null' olan satırları atla
                 continue;
