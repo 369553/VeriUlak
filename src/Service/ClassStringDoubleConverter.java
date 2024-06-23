@@ -49,6 +49,27 @@ public class ClassStringDoubleConverter{
             return false;
         return checkIsNumber(value.getClass());
     }
+    public boolean isNumber(Object value){
+        if(value == null)
+            return false;
+        Class typ = value.getClass();
+        if(typ == Number.class)
+            return true;
+        if(typ.getSuperclass() != null){
+            if(typ.getSuperclass() == Number.class)
+                return true;
+        }
+        return false;
+    }
+    public boolean areNumber(Object[] values){
+        if(values == null)
+            return false;
+        for(int sayac = 0; sayac < values.length; sayac++){
+            if(!isNumber(values[sayac]))
+                return false;
+        }
+        return true;
+    }
 
 //ERİŞİM YÖNTEMLERİ:
     //ANA ERİŞİM YÖNTEMİ:

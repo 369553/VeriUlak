@@ -1,5 +1,6 @@
 package Service;
 
+import Base.Statistic;
 import java.lang.reflect.Array;
 
 
@@ -540,6 +541,41 @@ public class MatrixFunctions{
             }
         }
         return transpozed;
+    }
+    public static Object[] normalizeValues(Object[] values){
+        return normalizeOrStandardizeValues(values, true);
+    }
+    public static Object[] standardizeValues(Object[] values){
+        return normalizeOrStandardizeValues(values, false);
+    }
+    //ARKAPLAN İŞLEM YÖNTEMLERİ:
+    private static Object[] normalizeOrStandardizeValues(Object[] values, boolean isNormalize){
+        if(values == null)
+            return null;
+        if(!ClassStringDoubleConverter.getService().areNumber(values))
+            return null;
+        Statistic stats = Statistic.calculateBasicStatistics(values, values[0].getClass());
+        if(stats.getSize() <= 1)// Sütunda dolu veri yoksa veyâ bir tâne varsa
+            return null;
+        double base;
+        if(isNormalize)// İşlem normalizasyon ise payda = xmax - xmin
+            base = stats.getRange();
+        else
+            base = stats.getStdDeviation();// İşlem standardizasyon ise payda = standart sapma
+        if(base == Double.NaN || base == Double.NEGATIVE_INFINITY || base == Double.POSITIVE_INFINITY)// Payda sıfırsa işleme devam edilemez!
+            return null;
+        Object[] processed = values.clone();
+        for(int sayac = 0; sayac < values.length; sayac++){
+            if(values[sayac] == null)// 'null' olan satırları atla
+                continue;
+            double upNumber;
+            if(isNormalize)// İşlem normalizasyon ise pay = x - xmin
+                upNumber = ((Double) values[sayac] - stats.getMin());
+            else// İşlem standardizasyon ise pay = x - ortalama
+                upNumber = ((Double) values[sayac] - stats.getMean());
+            processed[sayac] = (Double) (upNumber / base);
+        }
+        return processed;
     }
     
     /*Alltaki fonksiyon kullanılabilir:

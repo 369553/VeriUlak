@@ -1607,7 +1607,7 @@ public class DataAnalyzer{
             Statistic.calculateDistributionMetrics(statistics[colNumber], colData);
         getIsStatisticIsUpdate()[colNumber] = true;
     }
-    private boolean getIsNumber(int colNumber){
+    public boolean getIsNumber(int colNumber){
         Class typ = getDataTypes()[colNumber];
         if(typ == Number.class)
             return true;

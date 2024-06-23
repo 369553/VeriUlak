@@ -64,6 +64,8 @@ public class Statistic{
         st.size = data.length;
         st.numberAfterDot = numberAfterDotForDoubleOrFloat;
         // VERİ TİPİNİ ALGILAMA:
+        if(dataType == null)
+            dataType = data[0].getClass();
         if(dataType == Number.class)
             st.isNumber = true;
         else if(dataType.getSuperclass() != null){
