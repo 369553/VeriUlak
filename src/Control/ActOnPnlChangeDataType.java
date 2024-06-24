@@ -49,7 +49,7 @@ public class ActOnPnlChangeDataType implements ActionListener, ListSelectionList
                     confs.put("rollToDown", rollToDown);
                 }
             }
-            boolean isSuccess = IDARE.getIDARE().requestChangeDataType(colNumber, targetType, changeDataIfNeed, confs);
+            boolean isSuccess = IDARE.getIDARE().requestChangeDataType(colNumber, targetType, confs);
             if(isSuccess){
                 dType = targetType;
                 otherProcessContinue = true;

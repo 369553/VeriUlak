@@ -59,7 +59,7 @@ public class DataAnalyzer{
             detectDataTypes(autoDetectDataType);
             if(autoDetectDataType){
                 autoAssignDataTypes();
-                fixTypesOfDataDependMostMatchedType();
+//                fixTypesOfDataDependMostMatchedType();
             }
         }
     }
@@ -184,22 +184,12 @@ public class DataAnalyzer{
             dTypes = new Class[colCount];
         for(int sayac = 0; sayac < colIndexes.length; sayac++){
             HashMap<Class, Integer> mapCountedTypes = dTypesCounterForCols.get(colIndexes[sayac]);
-            HashMap<String, Object> res = detectMatchedDataTypeForCol(colIndexes[sayac], mapCountedTypes);
-            if(!((Boolean) res.get("isSuccess"))){// Bu sütun için veri tipi otomatik tespit edilemiyor
-                dTypes[colIndexes[sayac]] = null;// Bu sütunun veri tipini 'null' olarak ata
-                // Tavsiye ekleyebiliyorsan ekle
-            }
-            // Mesaj varsa, ekle:
-            if(res.get("message") != null){
-                addMessage((String) res.get("message"));
-            }
-            dTypes[colIndexes[sayac]] = (Class) res.get("result");
+            autoAssignDataTypeForCol(colIndexes[sayac], mapCountedTypes);
         }
     }
-    public void autoAssignDataTypes(){// Double veri tipinin üstünlüğü var
+    public void autoAssignDataTypes(){// Double veri tipinin üstünlüğü var = ?
         if(isRunAutoAssignDataTypes)// Daha önce bu yöntem çalıştırıldıysa, yeniden çalıştırma
             return;
-        // Bu fonksiyon çağrılıyorsa autoDetectDataType == null ise, veri tiplerini baştan tespit et
         int[] colIndexes = new int[colCount];
         for(int sayac = 0; sayac < colCount; sayac++){
             colIndexes[sayac] = sayac;
@@ -406,63 +396,47 @@ public class DataAnalyzer{
     private boolean analyzeIsDataNull(){//veri 'null' mı, kaba kontrolünü yapan yöntem
         return areAllValuesEmpty(data, false);
     }
-    private HashMap<String, Object> detectMatchedDataTypeForCol(int colIndex, HashMap<Class, Integer> mapOfCountedDataTypes){// Eğer bir sütunda hem noktalı sayı, hem de tamsayı varsa noktalı sayıyı varsayılan tip yap; ama Integer verilerin sayısı Double verilerin sayısından ciddî manâda fazla ise (toplam veri sayısına oranlanarak bakılmalı) öneri oluştur
-//        System.out.println("Fonksiyon çağrıldı : detectMatchedDataTypeForCol (sütun numarası : " + colIndex + ")");
-        int mostCountedTypeValue = -1;
+    private boolean autoAssignDataTypeForCol(int colIndex, HashMap<Class, Integer> mapOfCountedDataTypes){
+        int mostCountedTypeCountNumber = -1;
         Class mostCountedType = null;// En çok tekrar eden veri tipi
-        Class secondMostCountedType = null;// En çok tekrar eden ikinci veri tipi
-        HashMap<String, Object> resVal = new HashMap<String, Object>();// Sonucu döndürmek için bir değişken
-        boolean isSameCountedValue = false;// En çok tekrar eden iki veri tipinden aynı sayıda örnek varsa 'true', diğer durumlarda 'false'
+        Class dType;// Dönüştürülen veri tipi değerini tutmak için
         for(Class dTyp : mapOfCountedDataTypes.keySet()){
             int counted = mapOfCountedDataTypes.get(dTyp);
-            if(counted > mostCountedTypeValue){
-                mostCountedTypeValue = counted;
+            if(counted > mostCountedTypeCountNumber){
+                mostCountedTypeCountNumber = counted;
                 mostCountedType = dTyp;
             }
         }
-        for(Class dTyp : mapOfCountedDataTypes.keySet()){
-            if(mapOfCountedDataTypes.get(dTyp) == mostCountedTypeValue)
-                if(dTyp != mostCountedType){
-                    secondMostCountedType = dTyp;
-                    isSameCountedValue = true;
+        dType = mostCountedType;
+        Object[] colValues = (Object[]) getColumnValues(colIndex).clone();
+        boolean convToStringType = false;
+        for(int sayac = 0; sayac < rowCount; sayac++){
+            if(colValues[sayac] == null)
+                continue;
+            if(colValues[sayac].getClass() != mostCountedType){
+                Object[] res = convDataType(colValues[sayac], mostCountedType);
+                if((boolean) res[0]){
+                    colValues[sayac] = res[1];
                 }
-        }
-        if(mostCountedType == Integer.class){
-            Integer doubleValueNumber = mapOfCountedDataTypes.get(Double.class);
-            if(doubleValueNumber != null){
-//                System.err.println("Sütunda hem tamsayı, hem de noktalı sayı var");
-                int numberOfDoubleValues = doubleValueNumber;
-                if(numberOfDoubleValues / mostCountedTypeValue < 0.25){// Eğer Double verilerin sayısı int verilerin sayısından 1/4'ten daha az ise, öneri oluştur
-                    //getAdvices().add(new Advice(strAdvice, mthApplyAdvice, rowCount, columnNames));
-//                    System.out.println("Double veri sayısı çok düşük ama!");
+                else{
+                    convToStringType = true;
+                    break;
                 }
-                resVal.put("result", Double.class);
-                resVal.put("isSuccess", true);
-                resVal.put("message", "Sütunundaki verilerin çoğu tamsayı, bâzı verilerde hatâ varsa ve sütun veri tipi tamsayı ise sütun veri tipini değiştirebilirsiniz");
-                return resVal;
             }
         }
-        if(isSameCountedValue){
-            System.err.println("Sütunda en çok tekrar eden iki veri tipinin tekrar sayısı aynı" + "(sütun no : " + colIndex + ")");
-//            System.out.println("Birinci veri tipi.isim : " + mostCountedType.getName());
-//            System.out.println("İkinci veri tipi.isim : " + secondMostCountedType.getName());
-            resVal.put("message", "Sütunda en çok tekrar eden iki veri tipinin tekrar sayısı aynı : " + mostCountedType.getName() + " , " + secondMostCountedType.getName());
-            resVal.put("isSuccess", false);
-            return resVal;
+        if(convToStringType){
+            dType = String.class;
+            for(int sayac = 0; sayac < colValues.length; sayac++){
+                if(colValues[sayac] == null)
+                    continue;
+                colValues[sayac] = String.valueOf(colValues[sayac]);
+            }
         }
-        double rate = emptyRateOfCols[colIndex];
-        
-        resVal.put("result", mostCountedType);
-        resVal.put("isSuccess", true);
-        if(rate > 50.0){
-            String strMsg = colIndex + " sütunundaki veri tipinin otomatik tespiti yapıldı; fakat sütundaki verilerin çoğu boş";
-            resVal.put("message", strMsg);
-        }
-        return resVal;
-        // Dönüş haritası:
-        // result : veri tipi (Class)
-        // isSuccess : başarılı mı? (boolean)
-        // message : Başarısız olma durumunda başarısızlık mesajı; başarı olduğunda mesaj eklenmiyor
+        setData(MatrixFunctions.changeColumnData(data, colValues, colIndex));
+        getDataTypes()[colIndex] = dType;
+        getIsStatisticIsUpdate()[colIndex] = false;
+        getAreUniqueValuesCalculated()[colIndex] = false;
+        return true;
     }
     private Object convertStringDataType(String stringValue){//Boolean verileri tespit eder, sayısal verileri tespit eder; tüm sayısal verileri Double tipine dönüştürür
         String sVal = stringValue.trim();
@@ -777,14 +751,11 @@ public class DataAnalyzer{
         return true;
     }
     public boolean changeColumnDataType(int colIndex, Class targetType, HashMap<String, Object> conversionPolicy){
-        return changeColumnDataType(colIndex, targetType, true, conversionPolicy);
-    }
-    public boolean changeColumnDataType(int colIndex, Class targetType, boolean dontConvertIfSomeOnesAreNotMatched, HashMap<String, Object> conversionPolicy){
-        boolean isSuccess = convColumnDataType(colIndex, targetType, dontConvertIfSomeOnesAreNotMatched, conversionPolicy);
+        boolean isSuccess = convColumnDataType(colIndex, targetType, conversionPolicy);
         if(isSuccess){// Eğer dönüşüm başarılı olduysa
-            isStatisticIsUpdate[colIndex] = false;// İstatistikler taze değil olarak işâretle
+            getIsStatisticIsUpdate()[colIndex] = false;// İstatistikler taze değil olarak işâretle
             isColumnDetailsIsUpdate = false;// Sütun bilgileri taze değil olarak işâretle
-            if(areUniqueValuesCalculated[colIndex]){// Eğer daha evvel münferid değerler hesaplandıysa bu değerlerin veri tipini de değiştir
+            if(getAreUniqueValuesCalculated()[colIndex]){// Eğer daha evvel münferid değerler hesaplandıysa bu değerlerin veri tipini de değiştir
                 for(int sayac = 0; sayac < getUniqueAllColValues()[colIndex].length; sayac++){
                     Object[] res = convDataType(uniqueColValues[colIndex][sayac], targetType);
                     if((boolean) res[0])
@@ -973,34 +944,34 @@ public class DataAnalyzer{
         addCategoricalData(columnIndex, original, ctData, Integer.class, CategoricalVariable.CODING_TYPE.BINOMIAL);// Sütun verisini kategorik veri olarak kaydet
         return true;
     }
-    private boolean convColumnDataType(int colIndex, Class targetType, boolean dontConvertIfSomeOnesAreNotMatched, HashMap<String, Object> conversionPolicy){// İYİLEŞTİRİLEBİLİR FONKSİYON İDİ, ŞİMDİ KONTROL ET : HER SATIR İÇİN DÖNÜŞÜM UYGULANABİLİR Mİ VE HEDEF VERİ TİPİ NEDİR, KONTROLÜ YAPILIYOR, YAPILMAMALI
+    private boolean convColumnDataType(int colIndex, Class targetType, HashMap<String, Object> conversionPolicy){
         // conversionPolicy : <anahtar, değer>; <"targetType", targetType(Class tipinde)>;
         // Olası anahtar - değerler : <"rollDigitNumber", int>, <"rollToUp", boolean>,
         // <rollToDown, boolean> Eğer bu son iki değer de true ise Tamsayıya normal yuvarlanır
         if(dTypes == null)
             detectDataTypes(true);
-        Object[] colVals = getColumnValues(colIndex);
-        ArrayList<Integer> notConverted = new ArrayList<Integer>();
-        boolean isAllConverted = true;
-        String strError = "Şu indis için dönüşüm başarısız : ";
+        Object[] colVals = (Object[]) getColumnValues(colIndex).clone();
         for(int sayac = 0; sayac < rowCount; sayac++){
-//            System.out.println(sayac + ". satır veri tipi : " + colVals[sayac].getClass().getName() + "\tVerisi : " + colVals[sayac]);
             if(colVals[sayac] == null)
                 continue;
             try{
                 Object[] results = convDataType(colVals[sayac], targetType);
-                if(!((Boolean) results[0]))
+                if(!((Boolean) results[0]))// Veri doğrudan dönüştürülemiyorsa, kayıplı dönüştürmeyi dene (confs yapılandırmasındaki bilgiye göre)
                     throw new Exception(String.valueOf(sayac));
                 else{
-//                    System.out.println("Dönen değer : " + results[1] + "(" + results[1].getClass().getName() + ")");
                     colVals[sayac] = results[1];
-//                    System.out.println("data[" + sayac + "][" + colIndex + "].tipi : " + data[sayac][colIndex].getClass().getName() + "\tresults veri tipi : " + results[1].getClass().getName());
+                    if(conversionPolicy != null){
+                        if(targetType == Double.class){
+                            Object rollDigitNumber = conversionPolicy.get("rollDigitNumber");
+                            if(rollDigitNumber!= null){// Basamak yuvarlama ayarı verilmişse uygula
+                                colVals[sayac] = MathFuncs.roundNumber((double) colVals[sayac], (int) rollDigitNumber);
+                            }
+                        }
+                    }
                 }
             }
             catch(Exception exc){
-                if(dontConvertIfSomeOnesAreNotMatched && conversionPolicy == null)
-                    return false;
-                boolean keepGo = true;// İşleme devâm etmeyi işâretlemek için bayrak
+                System.err.println("Dönüşüm başarısız olmuış");
                 boolean isSuccess = true;// conversionPolicy = null olduğu durumda dönüşüm başarısız olursa tespit etmek için
                 if(conversionPolicy != null){
                     if(targetType == Integer.class){
@@ -1008,70 +979,38 @@ public class DataAnalyzer{
                         Object rollDown = conversionPolicy.get("rollToDown");
                         if(rollDown != null && rollUp != null){
                             Object[] results = convDataType(colVals[sayac], Double.class);
-                            if(!(boolean) results[0])
-                                isSuccess = false;
+                            if(!(boolean) results[0]){// Eğer tamsayıya çevrilemeyen veri, noktalı sayıya da çevrilemiyorsa, bu veri sayı değil; kayıplı dönüştürmek de mümkin değil
+                                return false;
+                            }
                             else{// Double'a dönüşümün başarılı olduğu durum
                                 colVals[sayac] = MathFuncs.rollDoubleToInteger((double) results[1], (boolean) rollUp, (boolean) rollDown);
                                 continue;
                             }
                         }
                         else
-                            isSuccess = false;
+                            return false;
                     }
                     else if(targetType == Double.class && colVals[sayac].getClass() == String.class){
                         // Double veri tipini aşan durumlarda double'a dönüşümü burada yapmalısın:
-                        
-                        isSuccess = false;// Buranın düzeltilmesi gerekiyor
+                        //.;.
+                        return false;// Buranın düzeltilmesi gerekiyor
                     }
-                    if(!isSuccess && dontConvertIfSomeOnesAreNotMatched)
+                    else
                         return false;
-                    else{
-                        notConverted.add(sayac);
-                        isAllConverted = false;
-                    }
                 }
-                else{
-                    notConverted.add(sayac);
-                    isAllConverted = false;
-                }
-                System.err.println(strError + exc.getMessage());
+                else
+                    return false;
             }
         }
-        if(notConverted.size() < colVals.length / 3){
-            if(conversionPolicy != null){
-                if(targetType == Double.class){
-                    Object rollDigitNumber = conversionPolicy.get("rollDigitNumber");
-                    if(rollDigitNumber != null){
-                        for(int sayac = 0; sayac < colVals.length; sayac++){
-                            boolean dontRoll = false;
-                            if(dontConvertIfSomeOnesAreNotMatched){
-                                for(int s2 = 0; s2 < notConverted.size(); s2++){
-                                    if(s2 == notConverted.get(s2)){
-//                                        System.err.println("Dönüştürülemeyen hücre : " + s2 + " //anl.846");
-                                        dontRoll = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if(!dontRoll){
-                            if(colVals[sayac] != null)
-                                colVals[sayac] = MathFuncs.roundNumber((double) colVals[sayac], (int) rollDigitNumber);
-                            }
-                        }
-                    }
-                }
-            }
-            setData(MatrixFunctions.changeColumnData(data, colVals, colIndex));
-            this.dTypes[colIndex] = targetType;
-            return true;
-        }
-        return false;
+        setData(MatrixFunctions.changeColumnData(data, colVals, colIndex));
+        this.dTypes[colIndex] = targetType;
+        return true;
     }
     public Object[] convDataType(Object data, Class targetType){// Dönüş tipi : Object[sonuç(başarılı ise 'true', başarısız ise 'false'), dönüştürülen değer (başarılı ise)]
         if(data == null)
             return new Object[]{false};
         Class curr = data.getClass();// Verinin şimdiki tipi
-        if(curr == targetType)// Verilerin tipleri aynıysa işlemi durdur
+        if(curr == targetType)// Verinin tipi ile hedef veri tipi aynıysa işlemi durdur
             return new Object[]{true, data};
         targetType = wrapPrimitiveClass(new Class[]{targetType})[0];// Hedef veri tipini kapsülle
         boolean isNumber = false;
@@ -1102,7 +1041,6 @@ public class DataAnalyzer{
                 sVal = sVal.replace(",", ".");
                 Number num = null;
                 if(targetType == Integer.class){
-                    // EK İŞLEM GEREKİYOR  : DOUBLE->INT sıkıntılı ; Double bir String->Int sıkıntılı:
                     String[] splitted = sVal.split("\\.");
                     for(int sayac = 1; sayac < splitted.length; sayac++){// Noktadan sonraki her veriyi gözden geçir
                         for(int s2 = 0; s2 < splitted[sayac].length(); s2++){// Bunların her bir harfini gözden geçir
@@ -1140,6 +1078,30 @@ public class DataAnalyzer{
             return new Object[]{false};
         }
         return new Object[]{false};
+    }
+    public Object[] convDataTypeWithoutDataChanging(Object data, Class dataType){
+        if(data == null || dataType == null)
+            return new Object[]{false, null};
+        if(data.getClass() == dataType)
+            return new Object[]{true, data};
+        String strData = String.valueOf(data);
+        if(strData == null)
+            return new Object[]{false, null};
+        if(dataType == String.class){
+            return new Object[]{true, strData};
+        }
+        boolean isTargetNumber = false;
+        if(dataType == Number.class)
+            isTargetNumber = true;
+        else if(dataType.getSuperclass() != null){
+            if(dataType.getSuperclass() == Number.class)
+                isTargetNumber = true;
+        }
+        
+        return null;
+        
+        
+        
     }
     private void saveCategoricConversion(Object[][] before, Process process, int colIndex){
         HashMap<String, Object> infos = process.getOtherInfo();
@@ -1818,7 +1780,7 @@ public class DataAnalyzer{
         Statistic stats;
         boolean isSuccess = false;
         if(dTypes[colIndex] != Double.class){// Veri tipi 'double' değilse, dönüştür
-            changeColumnDataType(colIndex, Double.class, true, null);
+            changeColumnDataType(colIndex, Double.class, null);
             if(!isSuccess)
                 return false;
         }
@@ -1915,8 +1877,12 @@ public class DataAnalyzer{
         return dTypesCounterForCols;
     }
     public Class[] getDataTypes(){
-        if(dTypes == null)
-            autoAssignDataTypes();
+        if(dTypes == null){
+            dTypes = new Class[colCount];
+            for(int sayac = 0; sayac < dTypes.length; sayac++){
+                dTypes[sayac] = String.class;
+            }
+        }
         return dTypes;
     }
     public boolean[] getCouldCategorical(){// Bu yönteme bu sınıf için gerek yok; 'NullPointerException' durumuna düşülmemesi için güvenlik tedbîri olarak ve arayüz ve testten erişim için eklendi

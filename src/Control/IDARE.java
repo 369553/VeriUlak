@@ -211,7 +211,7 @@ public class IDARE{
     public int getCurrentStep(){
         return getStream().getCurrentStep();
     }
-    public boolean requestChangeDataType(int colIndex, Class targetType, boolean changeDataIfNeed, HashMap<String, Object> configurations){
+    public boolean requestChangeDataType(int colIndex, Class targetType, HashMap<String, Object> configurations){
         // Veri değiştirme şu durumlarda söz konusudur : Integer -> Double'a , Double'dan Integer'a
                                                    // String -> Integer'a , String'ten Double'a
                   //!! : configurations ayarı kullanıcıya bırakılıyor, düzeltilmeli
@@ -219,7 +219,7 @@ public class IDARE{
             ContactPanel.getContactPanel().showMessage("Kategorik olarak kodlanan sütunda bu işlem yapılamaz!", "Warning");
             return false;
         }
-        boolean isSuccess = getAnalyzer().changeColumnDataType(colIndex, targetType, !changeDataIfNeed, configurations);
+        boolean isSuccess = getAnalyzer().changeColumnDataType(colIndex, targetType, configurations);
         if(isSuccess){
             getLastProccessInfo().clear();
             getLastDataPack().clear();
@@ -233,8 +233,8 @@ public class IDARE{
         }
         return isSuccess;
     }
-    public boolean requestChangeDataType(int colIndex, Class targetType, boolean changeDataIfNeed){
-        return requestChangeDataType(colIndex, targetType, changeDataIfNeed, null);
+    public boolean requestChangeDataType(int colIndex, Class targetType){
+        return requestChangeDataType(colIndex, targetType, null);
     }
     public boolean requestFillEmptiesOnColumn(int colIndex, String policyName, Object value){
         if(getAnalyzer().getIsColumnIsCategorical()[colIndex]){// Sütun kategorik veri barındırıyorsa
