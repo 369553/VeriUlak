@@ -5,8 +5,8 @@ import View.MainFrame;
 
 public class VeriUlak{
     public static void main(String[] args){
-        IDARE.startIDARE("code", MainFrame.getFrameMain());
-//        runTests();
+//        IDARE.startIDARE("code", MainFrame.getFrameMain());
+        runTests();
 //        runTestsOrdered();
     }
 
@@ -52,6 +52,7 @@ public class VeriUlak{
 //        test.testCategoricalVariableClassWithOneHotVectorCodingType();
 //        test.testCategoricalVariableClassWithBinomialCodingType();
 //        test.testPnlVarietyForText();
+        test.testDataSplitter();
         
     }
     public static void runTestsOrdered(){

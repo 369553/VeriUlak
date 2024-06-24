@@ -3,6 +3,7 @@ package veriulak;
 import Base.CategoricalVariable;
 import Base.DataAnalyzer;
 import Service.CSVReader;
+import Service.DataSplitter;
 import Service.MatrixFunctions;
 import Service.XlsXReader;
 import View.PnlTable;
@@ -1373,6 +1374,27 @@ public class Test{
         fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         fr.setVisible(true);
     }
+    public void testDataSplitter(){
+        Object[][] data = new Object[][]{
+            {256, 44, 3},
+            {5675, 766, 1434},
+            {234, 34, 7568},
+            {785, 88, 345},
+            {163, 314, 90},
+            {865, 487, 34},
+            {3093, 394, 923},
+            {393, 6867, 34644},
+            {585, 394, 923},
+            {3737, 394, 923},
+            {171, 117, 111},
+        };
+        HashMap<String, Object[][]> results = DataSplitter.splitTrainTestSet(data, 0.57, 0, false);
+        Object[][] train = results.get("train");
+        MatrixFunctions.printMatrix(train);
+    }
+    
+    
+    //////*************
     public void clear() throws AWTException {
         Robot rob = new Robot();
     try {
