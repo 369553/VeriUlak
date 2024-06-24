@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 public class PnlTopMenu extends JPanel{
     MnPreferences menu;
-    JButton btnNext, btnBack, btnInfo;
+    JButton btnNext, btnBack, btnInfo, btnAdvices;
     ActOnPnlTopMenu act;
     int vGap = 2, hGap = 7;//hGap = horizontalGap, vGap = verticalGap
     FlowLayout compOrder;
@@ -18,6 +18,7 @@ public class PnlTopMenu extends JPanel{
 
     public PnlTopMenu(){
         this.setLayout(getCompOrder());
+        this.add(getBtnAdvices());
         this.add(getBtnBack());
         this.add(getBtnNext());
         this.add(getBtnInfo());
@@ -67,6 +68,13 @@ public class PnlTopMenu extends JPanel{
             btnInfo.addActionListener(getAct());
         }
         return btnInfo;
+    }
+    public JButton getBtnAdvices(){
+        if(btnAdvices == null){
+            btnAdvices = new JButton("Tavsiyeler");
+            btnAdvices.addActionListener(getAct());
+        }
+        return btnAdvices;
     }
     public PnlInfo getPnlInfo(){
         if(pnlInfo == null)

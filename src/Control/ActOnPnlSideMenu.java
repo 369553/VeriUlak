@@ -108,9 +108,10 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
                 this.colNumber += 1;// Sütun numarasını bir arttır
             }
             this.dataPack = IDARE.getIDARE().getColumnDetails(colNumber);// ESKİ YÖNTEM
-            System.err.println("colNumber : " + colNumber);
+//            System.err.println("colNumber : " + colNumber);
             dataPack.put("statistic", IDARE.getIDARE().getStatisticsForColumn(colNumber));// ESKİ YÖNTEM
             this.updateDataFor();// ESKİ YÖNTEM
+            IDARE.getIDARE().triggerForSecondMenu(colNumber);
             if(colNumber == 0)
                 SM.getBtnSlideToBack().setEnabled(false);
             if(colNumber == maxNumber - 1)

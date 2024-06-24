@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,13 +21,18 @@ public class GUIIdare{
     private PnlMain MP;// Ana panel
     private PnlTopMenu TM;// Üst menü
     private Component SM;// Yan menü
+    private Component SM2;// İkinci yan menü
+    private boolean isSMAtRightSide = true;// İlk yan menü sağ tarafta ise 'true' olmalıdır
+    private boolean isSM2AtRightSide = false;// İkinci yan menü sağ tarafta ise 'true' olmalıdır
     private ContactPanel contact;//İletişim paneli
     private HashMap<String, Component> compAndNames;
     private Component curr;//currentComp
     private BorderLayout compOrd;//componentOrder
-    private boolean isGUIIdareActive = false;
-    private boolean isTMActive = false;
-    private boolean isSMActive = false;
+    private boolean isGUIIdareActive = false;// Görsel idâreci çalışıyor ise 'true' olmalıdır
+    private boolean isTMActive = false;// Üst menü atandıysa ise 'true' olmalıdır
+    private boolean isSMActive = false;// Yan menü atandıysa ise 'true' olmalıdır
+    private boolean isSM2Active = false;// İkinci yan menü atandıysa ise 'true' olmalıdır
+    private boolean isSM2Opened = false;// İkinci yan menü açık ise 'true' olmalıdır
     int hGap = 7, vGap = 4;//hGap = horizontalGap, vGap = verticalGap
     private InteractiveGUIStructs activeStructsIDARE;
     private ArrayList<Component> liCompsOnMPAsNotMain;// Ana panelin (MP) içerisinde ana görsel bileşen olarak bulunmayan görsel bileşenler
@@ -107,6 +111,22 @@ public class GUIIdare{
             loc = BorderLayout.WEST;
         H.add(SM, loc);
         isSMActive = true;
+        isSMAtRightSide = true;
+        getCompAndNames().put(SM.getClass().getName(), SM);
+    }
+    protected void addSecondSideMenu(Component sideMenu){
+        if(sideMenu == null)
+            return;
+        String loc = BorderLayout.EAST;
+        if(getIsSMAtRightSide()){
+            loc = BorderLayout.WEST;
+            isSMAtRightSide = false;
+        }
+        SM2 = sideMenu;
+        H.add(SM2, loc);
+        isSM2Active = true;
+        isSM2Opened = true;
+        getCompAndNames().put(SM2.getClass().getName(), SM2);
     }
     protected String[] getActivePanelNames(){
         ArrayList<String> actives = new ArrayList<String>();
@@ -137,7 +157,20 @@ public class GUIIdare{
             }
         }
         if(isSMActive){
-            ((IPanel) SM).updateDataFor(processDataPack);
+            try{
+                ((IPanel) SM).updateDataFor(processDataPack);
+            }
+            catch(ClassCastException exc){
+                System.out.println("Yan menü IPanel cinsinden değilmiş");
+            }
+        }
+        if(isSM2Active){
+            try{
+                ((IPanel) SM).updateDataFor(processDataPack);
+            }
+            catch(ClassCastException exc){
+                System.out.println("İkinci yan menü IPanel cinsinden değilmiş");
+            }
         }
     }
     protected void updateDataOnSelectedPanels(ArrayList<String> panelNames){
@@ -165,6 +198,22 @@ public class GUIIdare{
     }
     public GuiConstraint produceGuiConstraint(){
         return new GuiConstraint();
+    }
+    public void closeSecondSideMenu(){
+        if(SM2 == null)
+            return;
+        if(isSM2Opened){
+            SM2.setVisible(false);// Bunun yerine ekrandan kaldırmak daha mı doğru olur?
+            isSM2Opened = false;
+        }
+    }
+    public void openSecondSideMenu(){
+        if(SM2 == null)
+            return;
+        if(!isSM2Opened){
+            SM2.setVisible(true);// Bunun yerine ekrandan kaldırmak daha mı doğru olur?
+            isSM2Opened = true;
+        }
     }
     //ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void addTopMenu(){
@@ -244,7 +293,22 @@ public class GUIIdare{
         }
         return liCompsOnMPAsNotMain;
     }
-    
+    protected Component getSM(){
+        return SM;
+    }
+    protected Component getSM2(){
+        return SM2;
+    }
+    public boolean getIsSMAtRightSide(){
+        return isSMAtRightSide;
+    }
+    public boolean getIsSM2AtRightSide(){
+        return isSM2AtRightSide;
+    }
+    public boolean getIsSM2Opened() {
+        return isSM2Opened;
+    }
+
 // İÇ SINIF:
     public class GuiConstraint{
         GridBagConstraints constraints;

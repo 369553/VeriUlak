@@ -159,14 +159,14 @@ public class Statistic{
             st.roundBasicStatisticValues();
         return st;
     }
-    public static void calculateDistributionMetrics(Statistic stats, Object[] data){
-        calculateDistributionMetrics(stats, data, true);
+    public static Statistic calculateDistributionMetrics(Statistic stats, Object[] data){
+        return calculateDistributionMetrics(stats, data, true);
     }
-    public static void calculateDistributionMetrics(Statistic stats, Object[] data, boolean roundValues){
+    public static Statistic calculateDistributionMetrics(Statistic stats, Object[] data, boolean roundValues){
         //Önce veri içerisindeki 'null' değerleri çıkartalım, bi iznillâh:
         data = MatrixFunctions.deleteNullValues(data);
         if(!stats.isNumber)// Yalnızca sayısal veriler için dağılım ölçüleri hesâplanıyor
-            return;
+            return stats;
         double varForTotal = 0.0;
         double[] vals = new double[data.length];
         for(int sayac = 0; sayac < stats.size; sayac++){
@@ -187,6 +187,8 @@ public class Statistic{
         stats.stickiness = (varForTotal / stats.size) / Math.pow(stats.stdDeviation, 4) - 3;
         if(stats.isNumber && roundValues)
             stats.roundDistributionStatisticValues();
+        stats.isDistsCalculated = true;
+        return stats;
     }
     public static ArrayList<String> getStatisticAsList(Statistic stats){
         if(stats == null)

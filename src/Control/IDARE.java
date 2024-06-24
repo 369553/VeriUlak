@@ -7,13 +7,16 @@ import Service.CSVReader;
 import Service.XlsXReader;
 import View.ContactPanel;
 import View.MainFrame;
+import View.PnlAdvices;
 import View.PnlSideMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.filechooser.FileFilter;
 
-public class IDARE{
+public class IDARE implements ActionListener{
     private static IDARE idare = null;
     private String runningCode = "";
     private GUIIdare guiIDARE;
@@ -29,12 +32,14 @@ public class IDARE{
     private HashMap<String, Object> lastProccessInfo;
     private HashMap<String, Object> lastDataPack;
     private ArrayList<String> liPanelsWhichIncludeColDetails;// Sütun bilgisi içeren paneller (sütun bilgilerinde değişklik olduğunda tazelenmesi gerekiyor)
+    private ActionListener actForAdvices;// Tavsiye panelinden gelen eylemler için dinleyici
 
     private IDARE(String code, MainFrame frame){
         guiIDARE = GUIIdare.startGUIIDARE(this, frame);//Görsel idâreciyi başlat
         this.runningCode = code;//Çalışma zamânı güvenlik kodunu sakla
         Service.RWService.getService().setAcceptableExtensions(getAcceptableExtensions());//Girdi - çıktı biriminin tanıdığı dosya tiplerini belirle
         DataB.startDBase(this, runningCode);
+        actForAdvices = this;
         //.;.
     }
 
@@ -92,6 +97,13 @@ public class IDARE{
     public void goToBack(){
         getStream().goToBack(runningCode);
     }
+    @Override
+    public void actionPerformed(ActionEvent e){
+        if(e.getSource().getClass() == PnlAdvices.class){
+            PnlAdvices pnl = (PnlAdvices) e.getSource();
+            //.;.
+        }
+    }
     public boolean requestChangingData(int row, int col, Object value){
         boolean isSuccess = analyzer.setCellData(row, col, value);
         if(isSuccess){
@@ -103,22 +115,24 @@ public class IDARE{
             lastDataPack = getAnalyzer().getColumnDetails(col);
             lastDataPack.put("statistic", getAnalyzer().getStatisticForColumn(col));
             guiIDARE.updateDataOnSelectedPanels(getLiPanelsWhichIncludeColDetails());
+            triggerForSecondMenu(col);
         }
         return isSuccess;
     }
     public boolean requestChangingNameOfColumn(String oldName, String newName){
         boolean isSuccess = analyzer.setColumnName(oldName, newName);
         if(isSuccess){
+            int colNo = analyzer.getColIndexByName(newName);
             // .;. : Ekran tazelemeleri
             getLastProccessInfo().clear();
             getLastDataPack().clear();
             lastProccessInfo.put("processType", "changeColName");
-            lastProccessInfo.put("colNumber", analyzer.getColIndexByName(newName));
+            lastProccessInfo.put("colNumber", colNo);
             lastProccessInfo.put("name", newName);// >GEREKSİZZZZ
             lastDataPack.put("number", analyzer.getColIndexByName(newName));// !i3i
             lastDataPack.put("name", newName);
             guiIDARE.updateDataOnActivePanels();
-            System.err.println("İsim değiştirme başarılı");
+            triggerForSecondMenu(colNo);
         }
         return isSuccess;
     }
@@ -205,6 +219,7 @@ public class IDARE{
             lastProccessInfo.put("colNumber", colNumber);
             lastDataPack.put("number", colNumber);
             guiIDARE.updateDataOnActivePanels();
+            triggerForSecondMenu(colNumber);
         }
         return isSuccess;
     }
@@ -230,6 +245,7 @@ public class IDARE{
             lastDataPack.put("statistic", analyzer.getStatisticForColumn(colIndex));
             lastDataPack.put("data", analyzer.getData());
             guiIDARE.updateDataOnActivePanels();
+            triggerForSecondMenu(colIndex);
         }
         return isSuccess;
     }
@@ -289,6 +305,7 @@ public class IDARE{
             lastDataPack.put("statistic", analyzer.getStatisticForColumn(colIndex));
             lastDataPack.put("data", analyzer.getData());
             guiIDARE.updateDataOnActivePanels();
+            triggerForSecondMenu(colIndex);
         }
         return isSuccess;
     }
@@ -366,6 +383,7 @@ public class IDARE{
             lastDataPack.put("statistic", analyzer.getStatisticForColumn(colIndex));
             lastDataPack.put("colNumberOfCategoricalVariable", getAnalyzer().getMapCategoricalVars().get(colIndex).getColCount());
             guiIDARE.updateDataOnActivePanels();
+            triggerForSecondMenu(colIndex);
         }
         return isSuccess;
     }
@@ -387,11 +405,22 @@ public class IDARE{
             lastDataPack.put("data", analyzer.getData());
             lastDataPack.put("statistic", analyzer.getStatisticForColumn(colIndex));
             guiIDARE.updateDataOnActivePanels();
+            triggerForSecondMenu(colIndex);
         }
         return isSuccess;
     }
     public boolean[] getIsColumnCategorical(){
         return getAnalyzer().getIsColumnIsCategorical();
+    }
+    public void triggerForSecondMenu(int colIndex){
+        ArrayList<String> panelNames = new ArrayList<String>();
+        getLastProccessInfo().clear();
+        getLastDataPack().clear();
+        lastProccessInfo.put("processType", "changedColumn");
+        lastProccessInfo.put("colNumber", colIndex);
+        lastDataPack.put("advices", getAnalyzer().getAdviceTexts(colIndex));
+        panelNames.add(PnlAdvices.class.getName());
+        guiIDARE.updateDataOnSelectedPanels(panelNames);
     }
 
 //ERİŞİM YÖNTEMLERİ:
@@ -464,5 +493,8 @@ public class IDARE{
             lastDataPack = new HashMap<String, Object>();
         }
         return lastDataPack;
+    }
+    public ActionListener getActForAdvices(){
+        return actForAdvices;
     }
 }

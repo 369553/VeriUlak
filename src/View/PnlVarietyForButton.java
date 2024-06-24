@@ -26,18 +26,18 @@ public class PnlVarietyForButton extends JPanel implements ActionListener{
     int sizeOfContent;// İçerik sayısı
     String headText;// Başlık
     boolean isPanelOpened = true;// Panel açıldıysa 'true' olmalıdır
-    boolean isOnX = true;
+    boolean isOnY = true;
     int locOnX = 0;
     int locOnY = 0;
 
     public PnlVarietyForButton(int buttonNumber, String[] buttonNames, ActionListener actForButton, String headText){
         this(buttonNumber, buttonNames, actForButton, headText, true);
     }
-    public PnlVarietyForButton(int buttonNumber, String[] buttonNames, ActionListener actForButton, String headText, boolean isDirectionOnX){
+    public PnlVarietyForButton(int buttonNumber, String[] buttonNames, ActionListener actForButton, String headText, boolean isDirectionOnY){
         this.sizeOfContent = buttonNumber;
         this.act = actForButton;
         this.headText = headText;
-        this.isOnX = isDirectionOnX;
+        this.isOnY = isDirectionOnY;
         produceButtons(buttonNames);
         compOrder = new GridBagLayout();
         this.setLayout(compOrder);
@@ -70,6 +70,12 @@ public class PnlVarietyForButton extends JPanel implements ActionListener{
         getPnlButtons().removeAll();
         addGUIElements();
     }
+    public void setTextSize(float textSize){
+        getLiButtons().forEach((button) -> {button.setFont(button.getFont().deriveFont(textSize));});
+    }
+    public void wrapWordOnButtons(){
+        
+    }
     //ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void addGUIElements(){
         if(liButtons == null)
@@ -78,11 +84,12 @@ public class PnlVarietyForButton extends JPanel implements ActionListener{
         locOnY = 0;
         for(JButton btn : liButtons){
             Add.addComp(getPnlButtons(), btn, locOnX, locOnY, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
-            if(isOnX)
+            if(isOnY)
                 locOnY++;
             else
                 locOnX++;
         }
+        GUISeeming.appGUI(this);
     }
     private void produceButtons(String[] colNames){
         if(colNames == null)

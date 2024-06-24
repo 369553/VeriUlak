@@ -20,7 +20,7 @@ public class DataB {
     private String highLigthedColorForCellBackground = "#FF1919";
     private ArrayList<HashMap<String, String>> infoAboutSoftware;
     private ArrayList<String> liSolutionsOfNormalization;
-    private HashMap<String, String> LiInfoAboutSolutionsOfNormalization;
+    private HashMap<String, String> liInfoAboutSolutionsOfNormalization;
 
     private DataB(IDARE idare){
         this.idare = idare;
@@ -54,7 +54,7 @@ public class DataB {
             manipulationsForString.add("Eksik verilerle ilgilen");
             manipulationsForString.add("Veri tipini dönüştür");
             manipulationsForString.add("Sütunu kodla");
-            manipulationsForString.add("Metînsel işlemler");
+//            manipulationsForString.add("Metînsel işlemler");
         }
         return manipulationsForString;
     }
@@ -169,12 +169,12 @@ public class DataB {
         return liSolutionsOfNormalization;
     }
     public HashMap<String, String> getMapSolutionOfNormalizationToInfo(){
-        if(LiInfoAboutSolutionsOfNormalization == null){
-            LiInfoAboutSolutionsOfNormalization = new HashMap<String, String>();
-            LiInfoAboutSolutionsOfNormalization.put("Normalizasyon", "Normalizasyon....");
-            LiInfoAboutSolutionsOfNormalization.put("Standardizasyon", "Standardizasyon....");
+        if(liInfoAboutSolutionsOfNormalization == null){
+            liInfoAboutSolutionsOfNormalization = new HashMap<String, String>();
+            liInfoAboutSolutionsOfNormalization.put("Normalizasyon", "Normalizasyon....");
+            liInfoAboutSolutionsOfNormalization.put("Standardizasyon", "Standardizasyon....");
         }
-        return LiInfoAboutSolutionsOfNormalization;
+        return liInfoAboutSolutionsOfNormalization;
     }
     public String getInfoAboutSolutionOfNormalization(String solutionName){
         if(solutionName == null)

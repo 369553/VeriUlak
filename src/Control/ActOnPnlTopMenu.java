@@ -23,6 +23,12 @@ public class ActOnPnlTopMenu implements ActionListener{
         if(e.getSource() == pnl.getBtnInfo()){
             GUIIdare.getGUIIDARE().getActiveStructsIDARE().showSpecialGUI(pnl.getPnlInfo(), "Hakkında", "", 350, 270);
         }
+        if(e.getSource() == pnl.getBtnAdvices()){
+            if(GUIIdare.getGUIIDARE().getIsSM2Opened())
+                GUIIdare.getGUIIDARE().closeSecondSideMenu();
+            else
+                GUIIdare.getGUIIDARE().openSecondSideMenu();
+        }
     }
 
 //ERİŞİM YÖNTEMLERİ:

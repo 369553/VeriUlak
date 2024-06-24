@@ -20,7 +20,7 @@ public class DataAnalyzer{
     private double[] emptyRateOfCols;
     private String[] columnNames;
     private boolean isColumnNamesAlreadyTaked = false;//İlk satır sütun ismi olarak kaydedildiğinde, ilgili yöntem yeniden çağrıldığında ilk sütunun tekrar silinmemesi için
-    private ArrayList<Advice> adviceList;
+    private HashMap<Integer, ArrayList<Advice>> mapColToAdvices;// Yapısı : <sütunIsmi, sütun tavsiyeleri>
     private ArrayList<String> messages;
     private boolean isEmptyRatesIsUpdate = false;
     private Class[] dTypes;
@@ -118,7 +118,6 @@ public class DataAnalyzer{
                 for(int sayac = dataTypes.length; sayac < colCount; sayac++){//Veri tipi verilmeyen sütunları bir listeye atıyorum
                     colIndexes[counter] = sayac;
                 }
-                getAdvices().add(new Advice(strAdv, mth, this, new Object[]{colIndexes}));
                 str += " Tavsiyelere bakınız";
             }
             addMessage(str);
@@ -363,6 +362,40 @@ public class DataAnalyzer{
 //            System.err.println("Sütun verisi taze değilmiş");
         }
         return statistics[colNumber];
+    }
+    public void prepareAdvice(int colIndex){
+        ArrayList<Advice> old = getMapColToAdvices().get(colIndex);
+        if(old != null)
+            old.clear();
+        if(getIsColumnIsCategorical()[colIndex])//Kategorik sütun için oluşturulabilecek bir tavsiye yok
+            return;
+        if(dTypes == null)// Veri tipi tespit edilmediyse tespit et
+            detectDataTypes(true);
+        if(!isCalculatedCouldCategorical)// Sütunların kategorik olup olmaması hesâplanmadıysa, hesapla
+            detectCategoricalData();
+        ArrayList<Advice> advs = new ArrayList<Advice>();
+        if(getCouldCategorical()[colIndex]){
+            Advice adv = new Advice("<html>Sütun kategorik olabilir; <br/>kodlamaya göz atın</html>", "codeColumn");
+            advs.add(adv);
+        }
+        HashMap<String, Object> details = getColumnsDetail().get(colIndex);
+        double emptyRate = (double) details.get("emptyCellRate");
+        if(emptyRate > 0.3){// Eksik verilerle ilgilenin tavsiyesi
+            Advice adv = new Advice("<html>Eksik veriler az sayılmaz; <br/>ilgilenebilirsiniz</html>", "fillEmptiesfillEmptyCells");
+            advs.add(adv);
+        }
+        if(!isRunAutoAssignDataTypes){
+            Advice adv = new Advice("Otomatik veri tespiti için sütun düğmesine basıp, menüden ilgili kısmı seçin", "autoAssignDataType");
+            advs.add(adv);
+        }
+        if((boolean) details.get("isNumber")){
+            Statistic stats = getStatisticForColumn(colIndex);
+            if(stats.getStdDeviation() > (stats.getMean() / 4)){
+                Advice adv = new Advice("<html>Standart sapma yüksek! <br/>Normalizasyonu deneyin</html>", "normalizeColumn");
+                advs.add(adv);
+            }
+        }
+        getMapColToAdvices().put(colIndex, advs);// Tavsiyeleri haritaya yerleştir
     }
     public void reRunFindEmptyRowsAndCols(){
         isEmptyCountNumbersUpdate = false;
@@ -748,6 +781,7 @@ public class DataAnalyzer{
         }
         isColumnDetailsIsUpdate = false;
         isEmptyRatesIsUpdate = false;
+        isCalculatedCouldCategorical = false;
         return true;
     }
     public boolean changeColumnDataType(int colIndex, Class targetType, HashMap<String, Object> conversionPolicy){
@@ -783,6 +817,7 @@ public class DataAnalyzer{
                     }
                 }
             }
+            isCalculatedCouldCategorical = false;
             //.;. : Gereken başka işlem var mı?
         }
         return isSuccess;
@@ -901,6 +936,7 @@ public class DataAnalyzer{
             
         }
         addCategoricalData(columnIndex, original, ready, Integer.class, CategoricalVariable.CODING_TYPE.ORDINAL);// Sütun verisini kategorik veri olarak kaydet
+        isCalculatedCouldCategorical = false;
         return true;
     }
     public boolean setColumnAsCategoricalWithBinomialEncode(int columnIndex, boolean codeTrueAs1){
@@ -942,6 +978,7 @@ public class DataAnalyzer{
         areUniqueValuesCalculated[columnIndex] = false;
         isColumnDetailsIsUpdate = false;
         addCategoricalData(columnIndex, original, ctData, Integer.class, CategoricalVariable.CODING_TYPE.BINOMIAL);// Sütun verisini kategorik veri olarak kaydet
+        isCalculatedCouldCategorical = false;
         return true;
     }
     private boolean convColumnDataType(int colIndex, Class targetType, HashMap<String, Object> conversionPolicy){
@@ -1234,6 +1271,7 @@ public class DataAnalyzer{
                 getEmptyRateOfCols()[sayac] =  (((double) emptyCellNumber) / rowCount) * 100;
             }
         }
+        isCalculatedCouldCategorical = false;
     }
     public void deleteCols(int[] colIndexes){
         int[] howManyCellAreEmptyOnAffectedRow = new int[rowCount];
@@ -1304,7 +1342,7 @@ public class DataAnalyzer{
         }
         
         // 'Sütun numarası -> kategorik değişken' haritasındaki sütun numaralarını tazele (eğer gerekiyorsa):
-        HashMap<Integer, CategoricalVariable> mapNewVar = (HashMap<Integer, CategoricalVariable>) mapCategoricalVars.clone();
+        HashMap<Integer, CategoricalVariable> mapNewVar = (HashMap<Integer, CategoricalVariable>) getMapCategoricalVars().clone();
         for(int colNo : getMapCategoricalVars().keySet()){
             int shiftLeft = 0;
             for(int sayac = 0; sayac < colIndexes.length; sayac++){// Kategorik verilerin sütun numarasıyla eşleştirildiği haritayı tazele
@@ -1336,6 +1374,7 @@ public class DataAnalyzer{
                 mapForNewIndexToHeadIndex.put(colNo - shiftLeft, headIndexWhichPointed);
         }
         this.mapColIndexToCategoricalColIndex = mapForNewIndexToHeadIndex;// Yeni indis -> kategorik baş indisi haritasını sistemdeki ile değiştir
+        isCalculatedCouldCategorical = false;
     }
     public boolean normalizeOrStandardizeColumn(int colIndex, boolean isNormalize){
         if(colIndex < 0 || colIndex >= colCount)// Hatâli sütun numarası verildiyse
@@ -1565,8 +1604,9 @@ public class DataAnalyzer{
         if(statistics == null)
             statistics = new Statistic[colCount];
         statistics[colNumber] = Statistic.calculateBasicStatistics(colData, getDataTypes()[colNumber]);
-        if(!getIsColumnIsCategorical()[colNumber])
-            Statistic.calculateDistributionMetrics(statistics[colNumber], colData);
+        if(!getIsColumnIsCategorical()[colNumber]){
+            statistics[colNumber] = Statistic.calculateDistributionMetrics(statistics[colNumber], colData);
+        }
         getIsStatisticIsUpdate()[colNumber] = true;
     }
     public boolean getIsNumber(int colNumber){
@@ -1806,6 +1846,7 @@ public class DataAnalyzer{
         }
         getIsStatisticIsUpdate()[colIndex] = false;
         getAreUniqueValuesCalculated()[colIndex] = false;
+        isCalculatedCouldCategorical = false;
         return true;
     }
 
@@ -1844,18 +1885,24 @@ public class DataAnalyzer{
         }
         return value;
     }
-    public ArrayList<Advice> getAdvices(){
-        if(adviceList == null){
-            adviceList = new ArrayList<Advice>();
+    public HashMap<Integer, ArrayList<Advice>> getMapColToAdvices(){
+        if(mapColToAdvices == null){
+            mapColToAdvices = new HashMap<Integer, ArrayList<Advice>>();
         }
-        return adviceList;
+        return mapColToAdvices;
     }
-    public String[] getAdviceTexts(){
-        if(getAdvices().isEmpty())
+    public String[] getAdviceTexts(int colIndex){
+        prepareAdvice(colIndex);
+        if(getMapColToAdvices().isEmpty())
             return new String[]{""};
-        String[] texts = new String[adviceList.size()];
+        ArrayList<Advice> advs = mapColToAdvices.get(colIndex);
+        if(advs == null)
+            return new String[]{""};
+        if(advs.isEmpty())
+            return new String[]{""};
+        String[] texts = new String[mapColToAdvices.get(colIndex).size()];
         int sayac = 0;
-        for(Advice ad : adviceList){
+        for(Advice ad : mapColToAdvices.get(colIndex)){
             texts[sayac] = ad.getStrAdvice();
             sayac++;
         }

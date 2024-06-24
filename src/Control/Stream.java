@@ -3,6 +3,7 @@ package Control;
 import Base.DataAnalyzer;
 import Service.CryptService;
 import View.ContactPanel;
+import View.PnlAdvices;
 import View.PnlChooseData;
 import View.PnlSideMenu;
 import View.PnlTable;
@@ -65,9 +66,9 @@ public class Stream{
             HashMap<String, Object> vals = analyzer.getColumnsDetail().get(0);
             vals.put("statistic", analyzer.getStatisticForColumn(0));
             GUIIdare.getGUIIDARE().addSideMenu(new PnlSideMenu(vals), true);
-            
-            
-            
+            GUIIdare.getGUIIDARE().addSecondSideMenu(PnlAdvices.producePnlAdvices(null, IDARE.getIDARE().getActForAdvices()));
+            GUIIdare.getGUIIDARE().closeSecondSideMenu();
+            IDARE.getIDARE().triggerForSecondMenu(0);
             
             
             
