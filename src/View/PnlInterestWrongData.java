@@ -31,6 +31,7 @@ public class PnlInterestWrongData extends JPanel{
     JTextField txtValue;// 'Özel değer'in girilmesi için yazı alanı
     JLabel lblValueText;// 'Özel değer'in' girilmesi gerektiğini belirten yazı
     KeyListenerForDataType keyActForTxtValue;
+    PnlVarietyForText pnlInfo;// Bilgilendirme için
 
     public PnlInterestWrongData(ArrayList<String> columnNames){
         this.liColNames = columnNames;
@@ -57,7 +58,8 @@ public class PnlInterestWrongData extends JPanel{
     //ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void addGUIElements(){
         Add.addComp(this, getLblTextOfDataType(), 0, 0, 1, 1, GridBagConstraints.LINE_START, GridBagConstraints.NONE, 0.0, 0.0);
-        Add.addComp(this, getScrpaneForTblColData(), 0, 1, 2, 4, GridBagConstraints.WEST, GridBagConstraints.BOTH, 0.1, 0.05);
+        Add.addComp(this, getScrpaneForTblColData(), 0, 1, 2, 3, GridBagConstraints.WEST, GridBagConstraints.BOTH, 0.1, 0.05);
+        Add.addComp(this, getPnlInfo(), 0, 4, 2, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH, 0.1, 0.05);
         Add.addComp(this, getPnlColumns(), 2, 1, 1, 2, GridBagConstraints.EAST, GridBagConstraints.BOTH, 0.05, 0.05);
         Add.addComp(this, getPnlSolutions(), 2, 3, 1, 2, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 0.1, 0.3);
         Add.addComp(this, getLblValueText(), 0, 5, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, 0.0, 0.0);
@@ -147,5 +149,11 @@ public class PnlInterestWrongData extends JPanel{
             lblValueText = new JLabel("Özel değer : ");
         }
         return lblValueText;
+    }
+    public PnlVarietyForText getPnlInfo(){
+        if(pnlInfo == null){
+            pnlInfo = new PnlVarietyForText("Bilgilendirme", getAct().getInfoText());
+        }
+        return pnlInfo;
     }
 }

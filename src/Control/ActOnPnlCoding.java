@@ -88,6 +88,9 @@ public class ActOnPnlCoding implements ActionListener, ListSelectionListener{
         }
         return values;
     }
+    public String getInfoText(){
+        return DataB.getdBase().getInfoForCoding();
+    }
 
 //ERİŞİM YÖNTEMLERİ:
     public Object[] getRawData(){

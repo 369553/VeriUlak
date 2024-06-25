@@ -27,6 +27,7 @@ public class PnlCoding extends JPanel{
     JCheckBox chCodeTrueAsOne;// 'true' değerlerini '1' olarak kodlama seçeneği için seçilebilir arayüz elemanı
     JCheckBox chCode1AsTrue;// '1' değerlerini 'true' olarak kodlama seçeneği için seçilebilir arayüz elemanı
     JCheckBox chCodeAsBoolean;// 'Tek nokta vektörü' biçiminde kodlamada hedef veri tipini belirtmek için arayüz elemanı
+    PnlVarietyForText pnlInfo;// Bilgilendirme için
     PnlVarietyForOrderingTheList pnlSpecialConf;
 
     public PnlCoding(Object[] rawData, String headTextOfCol, Class dataType){
@@ -80,7 +81,8 @@ public class PnlCoding extends JPanel{
     // ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void addGUIElements(){
         Add.addComp(this, getLblTextOfDataType(), 0, 0, 1, 1, GridBagConstraints.LINE_START, GridBagConstraints.NONE, 0.0, 0.0);
-        Add.addComp(this, getScrpaneForTblColData(), 0, 1, 3, 3, GridBagConstraints.WEST, GridBagConstraints.BOTH, 0.1, 0.05);
+        Add.addComp(this, getScrpaneForTblColData(), 0, 1, 3, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH, 0.1, 0.05);
+        Add.addComp(this, getPnlInfo(), 0, 2, 3, 2, GridBagConstraints.WEST, GridBagConstraints.BOTH, 0.2, 0.05);
         Add.addComp(this, getPnlSolutions(), 3, 1, 2, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 0.5, 0.3);
         Add.addComp(this, getPnlConfigs(), 3, 2, 2, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 0.5, 0.3);
         Add.addComp(this, getBtnComplete(), 4, 3, 2, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 0.1, 0.05);
@@ -171,6 +173,12 @@ public class PnlCoding extends JPanel{
     }
     public PnlVarietyForOrderingTheList getPnlSpecialConf(){
         return pnlSpecialConf;
+    }
+    public PnlVarietyForText getPnlInfo(){
+        if(pnlInfo == null){
+            pnlInfo = new PnlVarietyForText("Bilgilendirme", getAct().getInfoText());
+        }
+        return pnlInfo;
     }
     
 }

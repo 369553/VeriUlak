@@ -12,6 +12,7 @@ import View.PnlManipulations;
 import View.PnlNormalization;
 import View.PnlSideMenu;
 import View.PnlStatistic;
+import View.PnlVarietyForText;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +46,9 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
         if(obj == SM.getBtnMain()){
             SM.getBtnMain().getPopmenuCol().show(SM.getBtnMain(), 40, 50);
             return;
+        }
+        else if(obj == SM.getPnlStats().getBtnMain()){
+            GUIIdare.getGUIIDARE().getActiveStructsIDARE().showSpecialGUI(new PnlVarietyForText("Bilgilendirme", DataB.getdBase().getInfoForStatistic()), "İstatistik verileri hakkında", "", 290, 210); 
         }
         else if(obj == SM.getPnlBasic().getBtnEditOrSave()){
             boolean isEditables = SM.getPnlBasic().getIsTextFieldIsEditable();

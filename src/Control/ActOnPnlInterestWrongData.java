@@ -100,6 +100,9 @@ public class ActOnPnlInterestWrongData implements ActionListener, ListSelectionL
         pnl.getTblColData().setSelectionBackground(Color.decode(DataB.getdBase().getHighLigthedColorForCellBackground()));
         pnl.getTblColData().setSelectionForeground(Color.decode(DataB.getdBase().getHighLigthedColorForCellForeground()));
     }
+    public String getInfoText(){
+        return DataB.getdBase().getInfoForWrongData();
+    }
     //ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void fetchListOfProcesses(){
         if(currentColName == null)

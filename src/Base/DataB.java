@@ -3,6 +3,7 @@ package Base;
 import Control.IDARE;
 import Service.ClassStringDoubleConverter;
 import Service.CryptService;
+import Service.JSONReader;
 import Service.RWService;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,10 +21,11 @@ public class DataB {
     private String highLigthedColorForCellBackground = "#FF1919";
     private ArrayList<HashMap<String, String>> infoAboutSoftware;
     private ArrayList<String> liSolutionsOfNormalization;
-    private HashMap<String, String> liInfoAboutSolutionsOfNormalization;
+    private HashMap<String, String> allInfos;
 
     private DataB(IDARE idare){
         this.idare = idare;
+        readInfos();
     }
 
 //İŞLEM YÖNTEMLERİ:
@@ -36,6 +38,24 @@ public class DataB {
             return false;
         DataB.dBase = new DataB(idare);
         return true;
+    }
+    //ARKAPLAN İŞLEM YÖNTEMLERİ:
+    private void readInfos(){
+        String path = System.getProperty("user.dir");
+        String fileName = "bilgilendirmeler.json";
+        String content = RWService.getService().readDataAsText(path, fileName);
+        JSONReader jReader = new JSONReader();
+        ArrayList<Object> turned = jReader.readJSONArray(content);
+        allInfos = new HashMap<String, String>();
+        for(Object obj : turned){
+            HashMap<String, String> map = (HashMap<String, String>) obj;
+            for(String key : map.keySet()){
+                allInfos.put(key, map.get(key));
+            }
+        }
+//        for(String key : allInfos.keySet()){
+//            System.out.println(key + " -> " + allInfos.get(key));
+//        }
     }
 
 //ERİŞİM YÖNTEMLERİ:
@@ -169,12 +189,10 @@ public class DataB {
         return liSolutionsOfNormalization;
     }
     public HashMap<String, String> getMapSolutionOfNormalizationToInfo(){
-        if(liInfoAboutSolutionsOfNormalization == null){
-            liInfoAboutSolutionsOfNormalization = new HashMap<String, String>();
-            liInfoAboutSolutionsOfNormalization.put("Normalizasyon", "Normalizasyon....");
-            liInfoAboutSolutionsOfNormalization.put("Standardizasyon", "Standardizasyon....");
-        }
-        return liInfoAboutSolutionsOfNormalization;
+        HashMap<String, String> values = new HashMap<String, String>();
+        values.put("Normalizasyon", allInfos.get("Normalizasyon"));
+        values.put("Standardizasyon", allInfos.get("Standardizasyon"));
+        return values;
     }
     public String getInfoAboutSolutionOfNormalization(String solutionName){
         if(solutionName == null)
@@ -182,5 +200,14 @@ public class DataB {
         if(solutionName.isEmpty())
             return "";
         return getMapSolutionOfNormalizationToInfo().get(solutionName);
+    }
+    public String getInfoForCoding(){
+        return allInfos.get("Kategorik kodlama");
+    }
+    public String getInfoForWrongData(){
+        return allInfos.get("Eksik veriler");
+    }
+    public String getInfoForStatistic(){
+        return allInfos.get("İstatistikler");
     }
 }

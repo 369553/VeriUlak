@@ -97,6 +97,8 @@ public class PnlVarietyForText extends JPanel implements ActionListener{
         if(txtAContent == null){
             txtAContent = new JTextArea(content);
             txtAContent.setEditable(false);
+            txtAContent.setWrapStyleWord(true);
+            txtAContent.setLineWrap(true);
         }
         return txtAContent;
     }

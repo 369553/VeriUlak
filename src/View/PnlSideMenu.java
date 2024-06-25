@@ -120,6 +120,7 @@ public class PnlSideMenu extends JPanel implements IPanel{
     public PnlStatistic getPnlStats(){
         if(pnlStats == null){
             pnlStats = new PnlStatistic((Statistic) getAct().getDataPack().get("statistic"));
+            pnlStats.getBtnMain().addActionListener(getAct());
         }
         return pnlStats;
     }
