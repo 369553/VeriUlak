@@ -21,7 +21,7 @@ public class PnlSideMenu extends JPanel implements IPanel{
     JScrollPane scrpaneContent;// pnlContent için kaydırılabilir görsel bileşen
     BorderLayout compOrder;
     private ActOnPnlSideMenu act;
-    int hGap = 2, vGap = 3;
+    int hGap = 5, vGap = 3;
     JPanel pnlSlideButtons;// Seçili sütunu değiştirmek için düğmelerin bulunduğu panel
     JButton btnSlideToBack, btnSlideToNext;// Seçili sütunu değiştirmek için düğmeler
     BtnColumn btnMain;// Temel bilgileri gösteren bir özel düğme

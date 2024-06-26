@@ -17,6 +17,7 @@ public class DataB {
     private HashMap<Class, String> dataTypeToName;// Verilen veri tipinin ismini saklayıp, her defasında 'split' yöntemiyle ayrıştırmamak için değişken
     private ArrayList<String> liInterestingOnWrongDataForNumerical;
     private ArrayList<String> liInterestingOnWrongDataForStringType;
+    private ArrayList<String> liSolutionsForOutliner;
     private String highLigthedColorForCellForeground = "#27196D";
     private String highLigthedColorForCellBackground = "#FF1919";
     private ArrayList<HashMap<String, String>> infoAboutSoftware;
@@ -85,6 +86,7 @@ public class DataB {
             manipulationsForNumber.add("Veri tipini dönüştür");
             manipulationsForNumber.add("Sütunu kodla");
             manipulationsForNumber.add("Normalizasyon ve standardizasyon");
+            manipulationsForNumber.add("Aykırı verilerle ilgilen");
         }
         return manipulationsForNumber;
     }
@@ -201,6 +203,13 @@ public class DataB {
             return "";
         return getMapSolutionOfNormalizationToInfo().get(solutionName);
     }
+    public ArrayList<String> getLiSolutionsForOutliner(){
+        if(liSolutionsForOutliner == null){
+            liSolutionsForOutliner = new ArrayList<String>();
+            liSolutionsForOutliner.add("Z skoru");
+        }
+        return liSolutionsForOutliner;
+    }
     public String getInfoForCoding(){
         return allInfos.get("Kategorik kodlama");
     }
@@ -209,5 +218,8 @@ public class DataB {
     }
     public String getInfoForStatistic(){
         return allInfos.get("İstatistikler");
+    }
+    public String getInfoForOutliner(){
+        return allInfos.get("Aykırı veriler");
     }
 }

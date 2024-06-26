@@ -119,6 +119,22 @@ public class IDARE implements ActionListener{
         }
         return isSuccess;
     }
+    public boolean requestSetColumnData(Object[] colData, Class dType, int colIndex){
+        boolean isSuccess = getAnalyzer().changeColumnDataAndDataType(colData, dType, colIndex);
+        if(isSuccess){
+            // TETİKLEMELER:
+            getLastProccessInfo().clear();
+            getLastDataPack().clear();
+            lastProccessInfo.put("processType", "changeColumnDataAndType");
+            lastProccessInfo.put("colNumber", colIndex);
+            lastDataPack = (HashMap<String, Object>) getAnalyzer().getColumnDetails(colIndex).clone();
+            lastDataPack.put("data", getAnalyzer().getData());
+            lastDataPack.put("statistic", analyzer.getStatisticForColumn(colIndex));
+            guiIDARE.updateDataOnActivePanels();
+            triggerForSecondMenu(colIndex);
+        }
+        return isSuccess;
+    }
     public boolean requestChangingNameOfColumn(String oldName, String newName){
         boolean isSuccess = analyzer.setColumnName(oldName, newName);
         if(isSuccess){
@@ -219,7 +235,7 @@ public class IDARE implements ActionListener{
             lastProccessInfo.put("colNumber", colNumber);
             lastDataPack.put("number", colNumber);
             guiIDARE.updateDataOnActivePanels();
-            triggerForSecondMenu(colNumber);
+            triggerForSecondMenu(0);
         }
         return isSuccess;
     }

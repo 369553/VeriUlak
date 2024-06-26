@@ -11,7 +11,7 @@ public class VeriUlak{
     }
 
 //TEST YÖNTEMLERİ:
-    public static void runTests(){
+    public static void runTests(){// Hızlı başlangıç için DataAnalyzer anl = readAndStartAnalyzerFor("example - 2 data.xlsx");
         // Öncül yöntem : readAndStartAnalyzerFor
         Test test = new Test();
         //test.csvOkumaOrnegi();
@@ -52,7 +52,12 @@ public class VeriUlak{
 //        test.testCategoricalVariableClassWithOneHotVectorCodingType();
 //        test.testCategoricalVariableClassWithBinomialCodingType();
 //        test.testPnlVarietyForText();
-        test.testDataSplitter();
+//        test.testDataSplitter();
+//        test.testSortWithIndexes();
+//        test.deleteSelectedMembers3();
+//        test.testOutlierDetection();
+        
+        
         
     }
     public static void runTestsOrdered(){

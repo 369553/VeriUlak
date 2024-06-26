@@ -3,7 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/NBProjects/VeriUlak/src/View/PnlVarietyForButton.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/View/PnlDetectOutlier.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/Control/ActOnPnlDetectOutlier.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/Base/OutlierDetection.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/Base/DataB.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/veriulak/Test.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/Service/MatrixFunctions.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/View/PnlInterestWrongData.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/Base/DataAnalyzer.java</file>
+            <file>file:/C:/NBProjects/VeriUlak/src/View/PnlConfigsChangeDataType.java</file>
             <file>file:/C:/NBProjects/VeriUlak/src/veriulak/VeriUlak.java</file>
         </group>
     </open-files>

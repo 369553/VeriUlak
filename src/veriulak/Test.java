@@ -3,7 +3,8 @@ package veriulak;
 import Base.CategoricalVariable;
 import Base.DataAnalyzer;
 import Service.CSVReader;
-import Service.DataSplitter;
+import Base.DataSplitter;
+import Base.OutlierDetection;
 import Service.MatrixFunctions;
 import Service.XlsXReader;
 import View.PnlTable;
@@ -476,10 +477,15 @@ public class Test{
         }
     }
     public void deleteSelectedMembers2(){
-        String[] dd = new String[]{""};
         Double[] dsdd = {2.2, 234.3, 35.4};
         int[] delIndexes = {0, 1};
         dsdd = MatrixFunctions.deleteSelectedMembers(dsdd, delIndexes, Double[].class);
+    }
+    public void deleteSelectedMembers3(){
+        Object[] dsdd = new Object[]{2.2, 234.3, 35.4, "St", true};
+        int[] delIndexes = {0, 1};
+        dsdd = MatrixFunctions.deleteSelectedMembers(dsdd, delIndexes, Object[].class);
+        MatrixFunctions.printVector(dsdd, false);
     }
     public void deleteSelectedCols(){
         Object[][] data = new Object[][]{
@@ -1391,6 +1397,34 @@ public class Test{
         HashMap<String, Object[][]> results = DataSplitter.splitTrainTestSet(data, 0.57, 0, false);
         Object[][] train = results.get("train");
         MatrixFunctions.printMatrix(train);
+    }
+    public void testSortWithIndexes(){
+        Double[] data = new Double[]{5d, 2d, 4d, 3d};
+//        Integer[] data = new Integer[]{5, 2, 4, 3};
+        HashMap<String, Object[]> results = MatrixFunctions.sortValuesReturnValuesAndIndexes(data, false);
+        String[] labels = new String[data.length];
+        Integer[] indexes = (Integer[]) results.get("indexes");
+        for(int sayac = 0; sayac < labels.length; sayac++){
+            labels[sayac] = String.valueOf(indexes[sayac]);
+        }
+        MatrixFunctions.printVectorWithLabels(results.get("data"), false, labels);
+    }
+    public void testOutlierDetection(){
+        DataAnalyzer anl = readAndStartAnalyzerFor("dataForUnderstandOutliner.xlsx");
+        Object[] values = anl.getColumnValues(0);// İlk sütun verisini al
+//        MatrixFunctions.printVector(values, false);
+        OutlierDetection detector = OutlierDetection.produceOutlierDetection(values);// Aykırı değer tespit aracı oluştur
+        detector.setAbsoluteLineOfZScore(1.0);
+        Double[] zScores = detector.getScores(OutlierDetection.SOLUTION.Z_SCORE);// Verilerin Z skor yöntemine göre skorlarını al
+//        MatrixFunctions.printVector(zScores, false);// Skorları yazdır
+        Double[] outliersDependZScores = detector.getOutliers(OutlierDetection.SOLUTION.Z_SCORE);// Z skor yöntemine göre aykırı değerleri al
+//        MatrixFunctions.printVector(outliersDependZScores, false);// Aykırı değerlerin skorlarını yazdır
+//        int rowNumber = detector.getRowCountOfOutlierDependPercentValue(OutlierDetection.SOLUTION.Z_SCORE, 50);// Aykırı verilerin yarısı kaç satır eder
+        Object[] cutted100Percent = detector.deleteOutliersDependPercentValue(OutlierDetection.SOLUTION.Z_SCORE, 100);// Aykırı değerlerin tamâmı silinmiş hâlini al
+//        MatrixFunctions.printVector(cutted100Percent, false);// Aykırı verileri olmayan verileri yazdır
+        
+        Object[] setNull100Percent = detector.setNullOutliersDependPercentValue(OutlierDetection.SOLUTION.Z_SCORE, 100);// Aykırı değerlerin 'null' olarak atandığı diziyi al
+        MatrixFunctions.printVector(setNull100Percent, false);// Aykırı verilerin yerine 'null' atanmış verileri yazdır
     }
     
     

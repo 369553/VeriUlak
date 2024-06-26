@@ -150,6 +150,34 @@ public class DataAnalyzer{
         }
         return false;
     }
+    public boolean changeColumnDataAndDataType(Object[] values, Class dataType, int colIndex){
+        if(colIndex < 0 || colIndex >= colCount)
+            return false;
+        if(values == null)
+            return false;
+        if(dataType == null)
+            return false;
+        if(getIsColumnIsCategorical()[colIndex]){
+            CategoricalVariable var = getCategoricVariableOfCol(colIndex);
+            if(var.getCodingType() == CategoricalVariable.CODING_TYPE.ONEHOTVECTOR){
+                //.;. : Kalan sütunların yeniden kodlanması lazım
+            }
+            else{
+                getMapCategoricalVars().remove(colIndex);
+            }
+            getIsColumnIsCategorical()[colIndex] = false;
+        }
+        for(int sayac = 0; sayac < values.length; sayac++){
+            data[sayac][colIndex] = values[sayac];
+        }
+        dTypes[colIndex] = dataType;
+        getIsStatisticIsUpdate()[colIndex] = false;
+        isColumnDetailsIsUpdate = false;
+        getAreUniqueValuesCalculated()[colIndex] = false;
+        isEmptyRatesIsUpdate = false;
+        isEmptyCountNumbersUpdate = false;
+        return true;
+    }
     public boolean setColumnName(String oldName, String newName){
         int index = -1;
         boolean isNameUsedBefore = false;
@@ -390,8 +418,9 @@ public class DataAnalyzer{
         }
         if((boolean) details.get("isNumber")){
             Statistic stats = getStatisticForColumn(colIndex);
-            if(stats.getStdDeviation() > (stats.getMean() / 4)){
+            if(stats.getStdDeviation() > (stats.getMean() / 3)){
                 Advice adv = new Advice("<html>Standart sapma yüksek! <br/>Normalizasyonu deneyin</html>", "normalizeColumn");
+                Advice adv2 = new Advice("<html>Standart sapma yüksek! <br/>Aykırı verileri kontrol edebilirsiniz</html>", "detectOutliner");
                 advs.add(adv);
             }
         }
@@ -668,7 +697,9 @@ public class DataAnalyzer{
                 couldCategorical[sayac] = true;
                 continue;
             }
-            int empty = getEmptyRowCounterForCols().get(sayac);// Boş hücre sayısı
+            Integer empty = getEmptyRowCounterForCols().get(sayac);// Boş hücre sayısı
+            if(empty == null)
+                empty = 0;
             int nonEmpty = rowCount - empty;// Dolu hücre sayısı
             int uniqValNum = uniques[sayac].length;// Münferid değer sayısı
             double rateOfUniqueValues = ((double) uniqValNum / (double) nonEmpty);// Münferid değer sayısının toplam değer sayısına oranı
@@ -1136,9 +1167,6 @@ public class DataAnalyzer{
         }
         
         return null;
-        
-        
-        
     }
     private void saveCategoricConversion(Object[][] before, Process process, int colIndex){
         HashMap<String, Object> infos = process.getOtherInfo();

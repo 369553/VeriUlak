@@ -2,6 +2,7 @@ package Service;
 
 import Base.Statistic;
 import java.lang.reflect.Array;
+import java.util.HashMap;
 
 
 public class MatrixFunctions{
@@ -137,6 +138,29 @@ public class MatrixFunctions{
             }
         }
         return value;
+    }
+    public static <T> T[] setNullSelectedMembers(T[] array, int[] deleteIndexes){
+        if(array == null)
+            return null;
+        if(deleteIndexes == null)
+            return array;
+        if(deleteIndexes.length == 0)
+            return array;
+        if(deleteIndexes.length >= array.length)
+            return null;
+        T[] values = array.clone();
+        int delCounter = 0;
+        int[] delAsSorted = sort(deleteIndexes, true);
+        for(int sayac = 0; sayac < array.length; sayac++){
+            for(int s2 = delCounter; s2 < delAsSorted.length; s2++){
+                if(sayac == delAsSorted[s2]){
+                    delCounter++;
+                    values[sayac] = null;
+                    break;
+                }
+            }
+        }
+        return values;
     }
     public static <T> T[] shiftArrayToLeft(T[] array, int beginIndex, Class<T[]> classOfArray){
         if(array == null)
@@ -304,6 +328,48 @@ public class MatrixFunctions{
             }
         }
         return value;
+    }
+    public static<T extends Number> HashMap<String, Object[]> sortValuesReturnValuesAndIndexes(T[] data, Integer[] indexes, boolean isAscending){
+        // Verileri sıralar; sonra sıralanmış verileri ve sıralanmış verilerin asıl dizideki indislerini döndürür
+        // Dönüş tipi : <data, sıralanmış veri>, <indexes, sıralanmış verilerin asıl dizideki indisleri>
+        T[] values = data.clone();
+        if(indexes == null){
+            indexes = new Integer[values.length];
+            for(int sayac = 0; sayac < indexes.length; sayac++){
+                indexes[sayac] = sayac;
+            }
+        }
+        for(int sayac = 0; sayac < values.length; sayac++){
+            for(int s2 = 0; s2 < values.length - sayac - 1; s2++){
+                if(isAscending){
+                    if(values[s2].doubleValue() > values[s2 + 1].doubleValue()){
+                        T temp = values[s2];
+                        int indexOfTemp = indexes[s2];
+                        values[s2] = values[s2 + 1];
+                        indexes[s2] = indexes[s2 + 1];// İNDİS
+                        values[s2 + 1] = temp;
+                        indexes[s2 + 1] = indexOfTemp;// İNDİS
+                    }
+                }
+                else{
+                    if(values[s2].doubleValue() < values[s2 + 1].doubleValue()){
+                        T temp = values[s2];
+                        int indexOfTemp = indexes[s2];
+                        values[s2] = values[s2 + 1];
+                        values[s2 + 1] = temp;
+                        indexes[s2] = indexes[s2 + 1];// İNDİS
+                        indexes[s2 + 1] = indexOfTemp;// İNDİS
+                    }
+                }
+            }
+        }
+        HashMap<String, Object[]> res = new HashMap<String, Object[]>();
+        res.put("data", values);
+        res.put("indexes", indexes);
+        return res;
+    }
+    public static<T extends Number> HashMap<String, Object[]> sortValuesReturnValuesAndIndexes(T[] data, boolean isAscending){
+        return sortValuesReturnValuesAndIndexes(data, null, isAscending);
     }
     public static boolean[] produceBooleanArray(int length, boolean value){
         if(length == 0)
