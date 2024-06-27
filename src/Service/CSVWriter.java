@@ -14,6 +14,10 @@ public class CSVWriter implements IWriter{
 //İŞLEM YÖNTEMLERİ:
     @Override
     public boolean writeData(String path, String fileName, Object[][] data){
+        return writeData(path, fileName, data, null);
+    }
+    @Override
+    public boolean writeData(String path, String fileName, Object[][] data, String[] columnNames){
         File target = new File(path + "\\" + fileName);
         FileOutputStream outStream = null;
         try{
@@ -27,9 +31,20 @@ public class CSVWriter implements IWriter{
             getErrors().add(exc.getMessage());
             return false;
         }
+        int rowCounter = 0;
         StringBuilder strbuiContent = new StringBuilder();
+        if(columnNames != null){// Eğer sütun ismi verilmişse ilk satıra sütun isimlerini yazdır
+            for(int s2 = 0; s2 < columnNames.length; s2++){
+                if(columnNames[s2] != null)
+                    strbuiContent.append(String.valueOf(columnNames[s2]));
+                if(s2 != columnNames.length - 1)
+                    strbuiContent.append(",");
+            }
+            strbuiContent.append("\n");
+            rowCounter++;
+        }
         for(int sayac = 0; sayac < data.length; sayac++){
-            if(sayac != 0)
+            if(rowCounter != 0)
                 strbuiContent.append("\n");
             for(int s2 = 0; s2 < data[sayac].length; s2++){
                 if(data[sayac][s2] != null)
@@ -37,6 +52,7 @@ public class CSVWriter implements IWriter{
                 if(s2 != data[sayac].length - 1)
                     strbuiContent.append(",");
             }
+            rowCounter++;
         }
         //Verileri dosyaya yaz:
         try{
@@ -69,5 +85,4 @@ public class CSVWriter implements IWriter{
             errors = new ArrayList<String>();
         return errors;
     }
-    
 }

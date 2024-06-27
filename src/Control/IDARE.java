@@ -5,6 +5,7 @@ import Base.DataB;
 import Base.Statistic;
 import Service.CSVReader;
 import Service.IWriter;
+import Service.RWService;
 import Service.XlsXReader;
 import View.ContactPanel;
 import View.MainFrame;
@@ -111,7 +112,18 @@ public class IDARE implements ActionListener{
         if(writer == null)
             return false;
         for(String name : dataSets.keySet()){
-            if(!writer.writeData(path, name + ext, dataSets.get(name)))
+            String fileName = name + "." + ext;
+            if(RWService.getService().checkFileIsExist(path, fileName)){
+                boolean keepGo = true;
+                int sayac = 2;
+                while(keepGo){
+                    fileName = name + " - " + sayac + "." + ext;
+                    if(!RWService.getService().checkFileIsExist(path, fileName))
+                        break;
+                    sayac++;
+                }
+            }
+            if(!writer.writeData(path, fileName, dataSets.get(name), getAnalyzer().getColumnNames()))
                 return false;
         }
         return true;

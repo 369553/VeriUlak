@@ -21,6 +21,10 @@ public class XlsXWriter implements IWriter{
 //İŞLEM YÖNTEMLERİ:
     @Override
     public boolean writeData(String path, String fileName, Object[][] data){
+        return writeData(path, fileName, data, null);
+    }
+    @Override
+    public boolean writeData(String path, String fileName, Object[][] data, String[] columnNames){
         XSSFWorkbook book = null;
         FileOutputStream outStream = null;
         File target = new File(path + "\\" + fileName);
@@ -37,9 +41,21 @@ public class XlsXWriter implements IWriter{
             return false;
         }
         XSSFSheet sheet = book.createSheet();
+        int rowCounter = 0;
         //Tabloyu verilerle doldur:
+        if(columnNames != null){// Eğer sütun ismi verilmişse ilk satıra sütun isimlerini yaz
+            XSSFRow row = sheet.createRow(0);
+            for(int s2 = 0; s2 < columnNames.length; s2++){
+                XSSFCell cell = row.createCell(s2, CellType.STRING);
+                if(columnNames[s2] != null)
+                    cell.setCellValue(columnNames[s2]);
+                else
+                    cell.setCellType(CellType.BLANK);
+            }
+            rowCounter++;
+        }
         for(int sayac = 0; sayac < data.length; sayac++){
-            XSSFRow row = sheet.createRow(sayac);
+            XSSFRow row = sheet.createRow(rowCounter);
             for(int s2 = 0; s2 < data[sayac].length; s2++){
                 CellType type = getCellType(data[sayac][s2]);
                 XSSFCell cell = row.createCell(s2, type);
@@ -53,6 +69,7 @@ public class XlsXWriter implements IWriter{
                 else if(type == CellType.STRING)
                     cell.setCellValue(String.valueOf(data[sayac][s2]));
             }
+            rowCounter++;
         }
         
         //Verileri dosyaya yaz:

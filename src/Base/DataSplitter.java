@@ -33,7 +33,7 @@ public class DataSplitter{
             rand = new Random(seed);
         else
             rand = new Random();
-        System.err.println("testDataNumber:" + testDataNumber);
+//        System.err.println("testDataNumber:" + testDataNumber);
         if(testDataNumber == 0)
             keepGo = false;
         while(keepGo){// Test veri seti için rastgele sayı bul

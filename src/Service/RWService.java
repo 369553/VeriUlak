@@ -197,6 +197,14 @@ public class RWService{
         else
             return false;
     }
+    public boolean checkFileIsExist(String path, String fileName){// Verilen dizinde verilen dosya isminde bir dosya olup, olmadığına bak
+        File file = new File(path);
+        for(String str : file.list()){
+            if(str.equals(fileName))
+                return true;
+        }
+        return false;
+    }
     public boolean deleteFile(String path, String fileName){
         File file = new File(path + "\\" + fileName);
         if(!file.canWrite())
