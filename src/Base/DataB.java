@@ -1,10 +1,13 @@
 package Base;
 
 import Control.IDARE;
+import Service.CSVWriter;
 import Service.ClassStringDoubleConverter;
 import Service.CryptService;
+import Service.IWriter;
 import Service.JSONReader;
 import Service.RWService;
+import Service.XlsXWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,6 +26,7 @@ public class DataB {
     private ArrayList<HashMap<String, String>> infoAboutSoftware;
     private ArrayList<String> liSolutionsOfNormalization;
     private HashMap<String, String> allInfos;
+    private HashMap<String, String> mapTextToSupportedFileTypes;// Veri tipi ismi -> veri tipi uzantısı
 
     private DataB(IDARE idare){
         this.idare = idare;
@@ -221,5 +225,35 @@ public class DataB {
     }
     public String getInfoForOutliner(){
         return allInfos.get("Aykırı veriler");
+    }
+    public String[] getOutputFileTypesAsStr(){
+        String[] types = new String[getMapTextToSupportedFileTypes().keySet().size()];
+        getMapTextToSupportedFileTypes().keySet().toArray(types);
+        return types;
+    }
+    public HashMap<String, String> getMapTextToSupportedFileTypes(){
+        if(mapTextToSupportedFileTypes == null){
+            mapTextToSupportedFileTypes = new HashMap<String, String>();
+            mapTextToSupportedFileTypes.put("Excel (xlsx)", "xlsx");
+            mapTextToSupportedFileTypes.put("JSON", "json");
+            mapTextToSupportedFileTypes.put("CSV", "csv");
+        }
+        return mapTextToSupportedFileTypes;
+    }
+    public IWriter getIWriterFromExtension(String extension){
+        if(extension == null)
+            return null;
+        if(extension.isEmpty())
+            return null;
+        extension = extension.trim().toLowerCase();
+        switch(extension){
+            case "xlsx" : {
+                return new XlsXWriter();
+            }
+            case "csv" :{
+                return new CSVWriter();
+            }
+        }
+        return null;
     }
 }

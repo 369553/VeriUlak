@@ -5,8 +5,10 @@ import Service.CryptService;
 import View.ContactPanel;
 import View.PnlAdvices;
 import View.PnlChooseData;
+import View.PnlDataSpliterSave;
 import View.PnlSideMenu;
 import View.PnlTable;
+import java.awt.Dimension;
 import java.util.HashMap;
 
 public class Stream{
@@ -40,6 +42,7 @@ public class Stream{
         return true;
     }
     protected boolean goToNext(String code){
+        System.out.println("stream.goToNext");
         if(!CryptService.getService().getMd5(code).equals(IDARE.getIDARE().getRunningCodeAsMd5()))
             return false;
         if(curr == 1){
@@ -69,15 +72,17 @@ public class Stream{
             GUIIdare.getGUIIDARE().addSecondSideMenu(PnlAdvices.producePnlAdvices(null, IDARE.getIDARE().getActForAdvices()));
             GUIIdare.getGUIIDARE().closeSecondSideMenu();
             IDARE.getIDARE().triggerForSecondMenu(0);
-            
-            
-            
-            
+            return true;
+        }
+        if(curr == 2){
+            curr++;
+            GUIIdare.getGUIIDARE().getTopMenu().getBtnBack().setEnabled(true);
+            GUIIdare.getGUIIDARE().getTopMenu().getBtnNext().setEnabled(false);
+            GUIIdare.getGUIIDARE().addToMP(new PnlDataSpliterSave(IDARE.getIDARE().getAnalyzer().getRowCount()));
+            return true;
         }
         
-        
-        
-        return true;
+        return false;
     }
     protected boolean goToBack(String code){
         if(!CryptService.getService().getMd5(code).equals(IDARE.getIDARE().getRunningCodeAsMd5()))
@@ -85,6 +90,20 @@ public class Stream{
             switch(curr){
                 case 2 :{
                     GUIIdare.getGUIIDARE().addToMP(screenOnStep1);
+                    --curr;
+                    return true;
+                }
+                case 3 :{
+                    GUIIdare.getGUIIDARE().addToMP(screenOnStep2);
+                    HashMap<String, Object> vals = analyzer.getColumnsDetail().get(0);
+                    vals.put("statistic", analyzer.getStatisticForColumn(0));
+                    GUIIdare.getGUIIDARE().addSideMenu(new PnlSideMenu(vals), true);
+                    GUIIdare.getGUIIDARE().addSecondSideMenu(PnlAdvices.producePnlAdvices(null, IDARE.getIDARE().getActForAdvices()));
+                    GUIIdare.getGUIIDARE().closeSecondSideMenu();
+                    IDARE.getIDARE().triggerForSecondMenu(0);
+                    GUIIdare.getGUIIDARE().getTopMenu().getBtnBack().setEnabled(true);
+                    GUIIdare.getGUIIDARE().getTopMenu().getBtnNext().setEnabled(true);
+                    GUIIdare.getGUIIDARE().getTopMenu().getBtnAdvices().setEnabled(true);
                     --curr;
                     return true;
                 }

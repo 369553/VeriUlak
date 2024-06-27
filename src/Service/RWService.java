@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RWService{
     private static RWService rw;
@@ -108,6 +110,13 @@ public class RWService{
         if(!saveLoc.isDirectory())
             return null;
         File ff = new File(saveLoc.getPath(), fileName);
+        try{
+            ff.createNewFile();
+        }
+        catch (IOException ex){
+            System.err.println(path + " dizininde " + fileName + " isminde dosya oluşturulamadı!");
+            return null;
+        }
         return ff;
     }
     public boolean produceAndWriteFile(String content, String fileName, String path){

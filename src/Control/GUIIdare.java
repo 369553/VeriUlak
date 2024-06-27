@@ -229,6 +229,10 @@ public class GUIIdare{
         if(componentName.equals(PnlTable.class.getName())){
             if(SM != null)
                 H.remove(SM);
+            if(SM2 != null){
+                H.remove(SM2);
+                TM.getBtnAdvices().setEnabled(false);
+            }
         }
         /*else if(){
             

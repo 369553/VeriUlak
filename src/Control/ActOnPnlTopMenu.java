@@ -15,7 +15,7 @@ public class ActOnPnlTopMenu implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == pnl.getBtnNext()){
-            //.;.
+            IDARE.getIDARE().goToNext(null);
         }
         if(e.getSource() == pnl.getBtnBack()){
             IDARE.getIDARE().goToBack();

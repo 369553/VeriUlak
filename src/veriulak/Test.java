@@ -5,8 +5,10 @@ import Base.DataAnalyzer;
 import Service.CSVReader;
 import Base.DataSplitter;
 import Base.OutlierDetection;
+import Service.CSVWriter;
 import Service.MatrixFunctions;
 import Service.XlsXReader;
+import Service.XlsXWriter;
 import View.PnlTable;
 import View.PnlVariety;
 import View.PnlVarietyForButton;
@@ -1394,7 +1396,7 @@ public class Test{
             {3737, 394, 923},
             {171, 117, 111},
         };
-        HashMap<String, Object[][]> results = DataSplitter.splitTrainTestSet(data, 0.57, 0, false);
+        HashMap<String, Object[][]> results = DataSplitter.splitTrainTestSet(data, 57, 0, false);
         Object[][] train = results.get("train");
         MatrixFunctions.printMatrix(train);
     }
@@ -1425,6 +1427,24 @@ public class Test{
         
         Object[] setNull100Percent = detector.setNullOutliersDependPercentValue(OutlierDetection.SOLUTION.Z_SCORE, 100);// Aykırı değerlerin 'null' olarak atandığı diziyi al
         MatrixFunctions.printVector(setNull100Percent, false);// Aykırı verilerin yerine 'null' atanmış verileri yazdır
+    }
+    public void testXlsXWriter(){
+        XlsXWriter wrt = new XlsXWriter();
+        DataAnalyzer anl = readAndStartAnalyzerFor("dataForUnderstandOutliner.xlsx");
+        String path = "C:\\Users\\Yazılım alanı\\Documents";
+        String fileName = "dosya1.xlsx";
+        Object[][] data = anl.getData();
+        data[0][1] = null;
+        wrt.writeData(path, fileName, data);
+    }
+    public void testCSVWriter(){
+        CSVWriter wrt = new CSVWriter();
+        DataAnalyzer anl = readAndStartAnalyzerFor("dataForUnderstandOutliner.xlsx");
+        String path = "C:\\Users\\Yazılım alanı\\Documents";
+        String fileName = "dosya1CSV.csv";
+        Object[][] data = anl.getData();
+        data[0][1] = null;
+        wrt.writeData(path, fileName, data);
     }
     
     

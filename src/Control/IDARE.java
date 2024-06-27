@@ -4,6 +4,7 @@ import Base.DataAnalyzer;
 import Base.DataB;
 import Base.Statistic;
 import Service.CSVReader;
+import Service.IWriter;
 import Service.XlsXReader;
 import View.ContactPanel;
 import View.MainFrame;
@@ -78,8 +79,6 @@ public class IDARE implements ActionListener{
     }
     public void goToNext(HashMap<String, Object> pack){
 //        System.err.println("current : " + getCurrentStep());
-        if(pack == null)
-            return;
         getStream().putPackForNextStep(pack);
         boolean isSuccess = getStream().checkPackForNextStep();
         if(!isSuccess){
@@ -103,6 +102,19 @@ public class IDARE implements ActionListener{
             PnlAdvices pnl = (PnlAdvices) e.getSource();
             //.;.
         }
+    }
+    public boolean exportData(String path, String fileTypeText, HashMap<String, Object[][]> dataSets){
+        if(fileTypeText == null || dataSets == null)
+            return false;
+        String ext = DataB.getdBase().getMapTextToSupportedFileTypes().get(fileTypeText);
+        IWriter writer = DataB.getdBase().getIWriterFromExtension(ext);
+        if(writer == null)
+            return false;
+        for(String name : dataSets.keySet()){
+            if(!writer.writeData(path, name + ext, dataSets.get(name)))
+                return false;
+        }
+        return true;
     }
     public boolean requestChangingData(int row, int col, Object value){
         boolean isSuccess = analyzer.setCellData(row, col, value);
@@ -492,7 +504,8 @@ public class IDARE implements ActionListener{
         return srcFileExt;
     }
     protected Object[][] getData(){
-        return data;
+        return getAnalyzer().getData();
+//        return data;
     }
     protected DataAnalyzer getAnalyzer(){
         return analyzer;

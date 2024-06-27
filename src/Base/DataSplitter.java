@@ -11,12 +11,12 @@ public class DataSplitter{
     }
 
 //İŞLEM YÖNTEMLERİ:
-    public static HashMap<String, Object[][]> splitTrainTestSet(Object[][] data, double rateOfTestSet, long seed, boolean useSeed){
+    public static HashMap<String, Object[][]> splitTrainTestSet(Object[][] data, double rateOfTestSetAsPercent, long seed, boolean useSeed){
         // GERİ DÖNÜŞ : <train, eğitim seti>, <test, test seti>
         int total = data.length;// Toplam veri büyüklüğü
         int testDataNumber;// Test veri seti büyüklüğü
         int trainDataNumber;// Eğitim veri seti büyüklüğü
-        testDataNumber = (int) (total * rateOfTestSet);
+        testDataNumber = (int) ((total * rateOfTestSetAsPercent) / 100);
         trainDataNumber = total - testDataNumber;
         ArrayList<Integer> indexesOfTrainSet = new ArrayList<Integer>();// Eğitim veri seti indisleri
         ArrayList<Integer> indexesOfTestSet = new ArrayList<Integer>();// Test veri seti indisleri
@@ -33,6 +33,9 @@ public class DataSplitter{
             rand = new Random(seed);
         else
             rand = new Random();
+        System.err.println("testDataNumber:" + testDataNumber);
+        if(testDataNumber == 0)
+            keepGo = false;
         while(keepGo){// Test veri seti için rastgele sayı bul
            dontUse = false;
            int index = Math.abs(rand.nextInt()) % total;
@@ -45,7 +48,7 @@ public class DataSplitter{
             if(!dontUse){
                 indexesOfTestSet.add(index);
             }
-            if(indexesOfTestSet.size() == testDataNumber)
+            if(indexesOfTestSet.size() >= testDataNumber)
                 break;
         }
 //        indexesOfTestSet.forEach((number) -> {System.out.println("test indis : " + number);});

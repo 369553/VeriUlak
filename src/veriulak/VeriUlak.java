@@ -56,8 +56,8 @@ public class VeriUlak{
 //        test.testSortWithIndexes();
 //        test.deleteSelectedMembers3();
 //        test.testOutlierDetection();
-        
-        
+//        test.testXlsXWriter();
+//        test.testCSVWriter();
         
     }
     public static void runTestsOrdered(){
