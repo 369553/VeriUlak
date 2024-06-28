@@ -176,6 +176,24 @@ public class IDARE implements ActionListener{
         }
         return isSuccess;
     }
+    public boolean requestAutoAssignDataType(int colIndex){
+        if(colIndex >= getAnalyzer().getColumnCount() || colIndex < 0)
+            return false;
+        getAnalyzer().autoAssignDataType(new int[]{colIndex});
+        {//Tetiklemeler:
+            getLastProccessInfo().clear();
+            getLastDataPack().clear();
+            lastProccessInfo.put("processType", "autoAssignDataType");
+            lastProccessInfo.put("colNumber", colIndex);
+            lastDataPack = getAnalyzer().getColumnDetails(colIndex);
+            lastDataPack.put("statistic", getAnalyzer().getStatisticForColumn(colIndex));
+            lastDataPack.put("data", getAnalyzer().getData());
+            guiIDARE.updateDataOnActivePanels();
+            //burada kalındı: tetiklemelerin diğer kısımları
+            triggerForSecondMenu(colIndex);
+        }
+        return true;
+    }
     public HashMap<Integer, HashMap<String, Object>> getColumnsDetail(){
         return this.analyzer.getColumnsDetail();
     }

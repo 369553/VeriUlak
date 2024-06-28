@@ -202,9 +202,7 @@ public class DataAnalyzer{
             return false;
     }
     public void autoAssignDataType(int[] colIndexes){// Tam tespit olmazsa ilgili sütunların veri tipi belirlenmemiş olarak kaydedilir
-//        System.out.println("Fonksiyon çağrıldı : autoAssignDataType()");
-        if(dTypesCounterForCols == null)
-            detectDataTypes(true);
+        detectDataTypes(true);
         if(dTypesCounterForCols == null)
             return;
         if(dTypes == null)
@@ -274,6 +272,12 @@ public class DataAnalyzer{
                 if(data[s2][sayac] == null){
 //                    System.err.println("data[s2][sayac] == null imiş");
                     continue;
+                }
+                if(data[s2][sayac].getClass() == String.class){// Boş metînleri 'null'a çevirerek veri tipi tespitinin hatâlı yapılmasına engel olmak için
+                    if(((String) data[s2][sayac]).isEmpty()){
+                        data[s2][sayac] = null;
+                        continue;
+                    }
                 }
                 if(convertDataTypes){
                     Object cellValue = data[s2][sayac];

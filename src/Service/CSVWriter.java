@@ -40,7 +40,6 @@ public class CSVWriter implements IWriter{
                 if(s2 != columnNames.length - 1)
                     strbuiContent.append(",");
             }
-            strbuiContent.append("\n");
             rowCounter++;
         }
         for(int sayac = 0; sayac < data.length; sayac++){

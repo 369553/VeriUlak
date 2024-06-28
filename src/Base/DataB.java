@@ -235,7 +235,7 @@ public class DataB {
         if(mapTextToSupportedFileTypes == null){
             mapTextToSupportedFileTypes = new HashMap<String, String>();
             mapTextToSupportedFileTypes.put("Excel (xlsx)", "xlsx");
-            mapTextToSupportedFileTypes.put("JSON", "json");
+//            mapTextToSupportedFileTypes.put("JSON", "json");// Şimdilik yok
             mapTextToSupportedFileTypes.put("CSV", "csv");
         }
         return mapTextToSupportedFileTypes;

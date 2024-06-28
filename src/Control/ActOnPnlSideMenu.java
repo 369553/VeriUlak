@@ -98,6 +98,9 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
             updateDataFor();
             return;
         }
+        if(obj == SM.getBtnMain().getMenuelementAutoAssignDataType()){
+            IDARE.getIDARE().requestAutoAssignDataType(colNumber);
+        }
         if(obj == SM.getBtnSlideToBack() || obj == SM.getBtnSlideToNext()){
             int maxNumber = IDARE.getIDARE().getAnalyzer().getColumnCount();
             if(obj == SM.getBtnSlideToBack()){
@@ -223,6 +226,13 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
                 this.dataPack = IDARE.getIDARE().getLastDataPack();
                 updateDataFor();
             }
+        }
+        else if(processType.equals("autoAssignDataType")){
+            int colNumber = (int) IDARE.getIDARE().getLastProccessInfo().get("colNumber");
+            if(this.colNumber == colNumber){
+                this.dataPack = IDARE.getIDARE().getLastDataPack();
+                updateDataFor();
+            } 
         }
     }
     public void updateDataFor(){

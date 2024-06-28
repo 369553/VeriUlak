@@ -18,6 +18,7 @@ public class BtnColumn extends JButton{
     ActionListener act;
     JPopupMenu popmenuCol;
     JMenuItem menuelementDelCol;
+    JMenuItem menuelementAutoAssignDataType;
 
     public BtnColumn(String colName, String dataType, int size, ActionListener act){
         super();
@@ -96,6 +97,7 @@ public class BtnColumn extends JButton{
         if(popmenuCol == null){
             popmenuCol = new JPopupMenu("İşlemler");
             popmenuCol.add(getMenuelementDelCol());
+            popmenuCol.add(getMenuelementAutoAssignDataType());
             popmenuCol.setPreferredSize(new Dimension(150, 50));
             popmenuCol.setEnabled(true);
 //            popmenuCol.setInvoker(this);
@@ -109,5 +111,13 @@ public class BtnColumn extends JButton{
             menuelementDelCol.addActionListener(getAct());
         }
         return menuelementDelCol;
+    }
+    public JMenuItem getMenuelementAutoAssignDataType(){
+        if(menuelementAutoAssignDataType == null){
+            menuelementAutoAssignDataType = new JMenuItem("Veri tipini otomatik ata");
+            menuelementAutoAssignDataType.setName("Veri tipini otomatik ata");
+            menuelementAutoAssignDataType.addActionListener(getAct());
+        }
+        return menuelementAutoAssignDataType;
     }
 }
