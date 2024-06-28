@@ -17,13 +17,16 @@ public class ActOnPnlTopMenu implements ActionListener{
         if(e.getSource() == pnl.getBtnNext()){
             IDARE.getIDARE().goToNext(null);
         }
-        if(e.getSource() == pnl.getBtnBack()){
+        else if(e.getSource() == pnl.getBtnBack()){
             IDARE.getIDARE().goToBack();
         }
-        if(e.getSource() == pnl.getBtnInfo()){
+        else if(e.getSource() == pnl.getBtnInfo()){
             GUIIdare.getGUIIDARE().getActiveStructsIDARE().showSpecialGUI(pnl.getPnlInfo(), "Hakkında", "", 350, 270);
         }
-        if(e.getSource() == pnl.getBtnAdvices()){
+        else if(e.getSource() == pnl.getBtnChangeSeeming()){
+            GUIIdare.getGUIIDARE().changeSeeming();
+        }
+        else if(e.getSource() == pnl.getBtnAdvices()){
             if(GUIIdare.getGUIIDARE().getIsSM2Opened())
                 GUIIdare.getGUIIDARE().closeSecondSideMenu();
             else

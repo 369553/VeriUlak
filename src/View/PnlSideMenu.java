@@ -50,6 +50,10 @@ public class PnlSideMenu extends JPanel implements IPanel{
     public void updateDataFor(HashMap<String, Object> processDataPack){
         getAct().updateDataFor(processDataPack);
     }
+    public void refreshGUISeeming(){
+        GUISeeming.appGUI(getPnlBasic());
+        GUISeeming.appGUI(getPnlManp());
+    }
     //ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void addingGUIParts(){
 //        liPanels.add(new PnlBasic(IDARE.getIDARE().getColumnDetails(0), getAct()));

@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 public class PnlTopMenu extends JPanel{
     MnPreferences menu;
-    JButton btnNext, btnBack, btnInfo, btnAdvices;
+    JButton btnNext, btnBack, btnInfo, btnAdvices, btnChangeSeeming;
     ActOnPnlTopMenu act;
     int vGap = 2, hGap = 7;//hGap = horizontalGap, vGap = verticalGap
     FlowLayout compOrder;
@@ -22,6 +22,7 @@ public class PnlTopMenu extends JPanel{
         this.add(getBtnBack());
         this.add(getBtnNext());
         this.add(getBtnInfo());
+        this.add(getBtnChangeSeeming());
         /*this.setPreferredSize(new Dimension(((int) GUIIdare.getGUIIDARE().getDimensionOfMainPanel().getWidth()),
                 ((int) GUIIdare.getGUIIDARE().getDimensionOfMainPanel().getHeight() / 14)));*/
         GUISeeming.appGUI(this);
@@ -65,6 +66,7 @@ public class PnlTopMenu extends JPanel{
     public JButton getBtnInfo(){
         if(btnInfo == null){
             btnInfo = new JButton("Hakkında");
+            btnInfo.setPreferredSize(new Dimension(63, 25));
             btnInfo.addActionListener(getAct());
         }
         return btnInfo;
@@ -72,9 +74,18 @@ public class PnlTopMenu extends JPanel{
     public JButton getBtnAdvices(){
         if(btnAdvices == null){
             btnAdvices = new JButton("Tavsiyeler");
+            btnAdvices.setPreferredSize(new Dimension(67, 25));
             btnAdvices.addActionListener(getAct());
         }
         return btnAdvices;
+    }
+    public JButton getBtnChangeSeeming(){
+        if(btnChangeSeeming == null){
+            btnChangeSeeming = new JButton("Görünümü değiştir");
+            btnChangeSeeming.setPreferredSize(new Dimension(127, 25));
+            btnChangeSeeming.addActionListener(getAct());
+        }
+        return btnChangeSeeming;
     }
     public PnlInfo getPnlInfo(){
         if(pnlInfo == null)

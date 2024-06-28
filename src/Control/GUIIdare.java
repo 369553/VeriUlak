@@ -9,6 +9,7 @@ import View.PnlTable;
 import View.PnlTopMenu;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.util.ArrayList;
@@ -199,7 +200,7 @@ public class GUIIdare{
     public GuiConstraint produceGuiConstraint(){
         return new GuiConstraint();
     }
-    public void closeSecondSideMenu(){
+    protected void closeSecondSideMenu(){
         if(SM2 == null)
             return;
         if(isSM2Opened){
@@ -207,13 +208,39 @@ public class GUIIdare{
             isSM2Opened = false;
         }
     }
-    public void openSecondSideMenu(){
+    protected void openSecondSideMenu(){
         if(SM2 == null)
             return;
         if(!isSM2Opened){
             SM2.setVisible(true);// Bunun yerine ekrandan kaldırmak daha mı doğru olur?
             isSM2Opened = true;
         }
+    }
+    protected void changeSeeming(){
+        String changeTo = "Dark";
+        if(GUISeeming.seeming.seemingName == "Dark")
+            changeTo = "Standard";
+        GUISeeming.seeming = GUISeeming.OrderProducer(changeTo);
+        GUISeeming.appGUI((Container) MP);
+        GUISeeming.appGUI(TM);
+        if(isSMActive){
+            GUISeeming.appGUI((Container) SM);
+        }
+        if(isSM2Active)
+            GUISeeming.appGUI((Container) SM2);
+        for(Component cmp : getActivePanels()){
+            try{
+                Container cnt = (Container) cmp;
+                GUISeeming.appGUI(cnt);
+            }
+            catch(ClassCastException exc){
+                GUISeeming.appGUI(cmp);
+            }
+        }
+        if(contact != null)
+            GUISeeming.appGUI(contact);
+        MP.repaint();
+        MP.setVisible(true);
     }
     //ARKAPLAN İŞLEM YÖNTEMLERİ:
     private void addTopMenu(){

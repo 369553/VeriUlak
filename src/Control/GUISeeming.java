@@ -1,6 +1,7 @@
 package Control;
 
 import View.BtnColumn;
+import View.PnlSideMenu;
 import View.PnlVariety;
 import View.PnlVarietyForButton;
 import View.PnlVarietyForText;
@@ -453,6 +454,7 @@ public class GUISeeming{
                     else
                         appGUI(subComp);
                 }
+                ((PnlSideMenu)component).refreshGUISeeming();
                 //PnlColumnDetails biçimlendirilecek bi iznillâh, özel biçimlendirme de gerekiyor, misal renk gibi
                 return true;
             }

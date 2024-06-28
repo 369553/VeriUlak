@@ -29,6 +29,9 @@ public class PnlBasic extends JPanel implements IGUIElementOnList{
         changeContent(dataPack);
         GUISeeming.appGUI(this);
     }
+    public void refreh(){
+        GUISeeming.appGUI(this);
+    }
 
 //İŞLEM YÖNTEMLERİ:
     public void setEditableOfTextField(boolean isEditable){
