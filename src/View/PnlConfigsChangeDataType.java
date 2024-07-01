@@ -85,7 +85,7 @@ public class PnlConfigsChangeDataType extends JPanel{
     }
     public JLabel getLblDigitNumberText(){
         if(lblDigitNumberText == null){
-            lblDigitNumberText = new JLabel("Basamak sayısı:");
+            lblDigitNumberText = new JLabel("Kesirli kısmın basamak sayısı:");
         }
         return lblDigitNumberText;
     }

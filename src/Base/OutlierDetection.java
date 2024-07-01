@@ -11,7 +11,7 @@ public class OutlierDetection{
     private HashMap<SOLUTION, Double[]> scores;// Skorları tutmak için... Yapısı : <Çözüm yöntemi, skor değerleri>
     private HashMap<SOLUTION, Double[]> outliers;// Aykırı verileri tutmak için... Yapısı : <Çözüm yöntemi, Aykırı veriler>
     private HashMap<SOLUTION, Integer[]> indexOfOutliers;// Aykırı verilerin indislerini tutmak için... Yapısı : <Çözüm yöntemi, Aykırı verinin indisi>
-    private double absoluteLineOfZScore = 1.0;// Z skor yöntemi kullanıldığında aykırı veriyi tespit için bir sınır. ZScore(veri) > lineOfZScore -> veri aykırıdır
+    private double absoluteLineOfZScore = 2.4;// Z skor yöntemi kullanıldığında aykırı veriyi tespit için bir sınır. ZScore(veri) > lineOfZScore -> veri aykırıdır
     private Class dType;
     private Statistic stats = null;
     
