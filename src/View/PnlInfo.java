@@ -36,13 +36,16 @@ public class PnlInfo extends JPanel{
             JLabel lbl = new JLabel(map.get("name"));
             JTextArea txtarea = new JTextArea(map.get("text"));
             txtarea.setEditable(false);
+            txtarea.setLineWrap(true);
+            txtarea.setWrapStyleWord(true);
             JScrollPane scrpane = new JScrollPane(txtarea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            JPanel pnl = new JPanel(new GridLayout(1, 2, 2, 2));
-            pnl.setPreferredSize(new Dimension(270, 70));
-            pnl.add(lbl);
-            pnl.add(scrpane);
+            scrpane.setPreferredSize(new Dimension(205, 215));
+            JPanel pnl = new JPanel(new GridBagLayout());
+            Add.addComp(pnl, lbl, 0, 0, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE, 0.1, 0.1);
+            Add.addComp(pnl, scrpane, 1, 0, 3, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 1.0, 1.0);
             Add.addComp(getPnlMain(), pnl, 0, sayac, 1, 1, GridBagConstraints.LINE_START, GridBagConstraints.BOTH);
             sayac++;
+            GUISeeming.appGUI(pnl);
         }
     }
 

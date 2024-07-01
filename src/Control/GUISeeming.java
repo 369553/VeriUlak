@@ -28,7 +28,7 @@ import javax.swing.JViewport;
 import javax.swing.border.Border;
 
 public class GUISeeming{
-    protected static GUISeeming seeming = GUISeeming.OrderProducer("Dark");
+    protected static GUISeeming seeming = GUISeeming.OrderProducer("Standard");
     String seemingName, hexBackgroundColor, hexButtonColor, hexTextColor,
             hexButtonTextColor, hexBorderColor, hexTextAreaColor, hexTextAreaTextColor,
             hexTextAreaSelectedColor, hexTextAreaSelectedTextColor, hexCursorColor, hexMenuColor,

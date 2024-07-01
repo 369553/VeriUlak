@@ -38,7 +38,19 @@ public class ActOnPnlInterestWrongData implements ActionListener, ListSelectionL
                 value = pnl.getTxtValue().getText();
                 // Dönüşüm kontrolüne gerek yok; zâten hedef veri tipine uygun veri girilmezse engelleniyor ('KeyListenerForDataType' ile)
             }
-            boolean isSuccess = IDARE.getIDARE().requestFillEmptiesOnColumn(currentColIndex, selectedSolution, value);
+            boolean isSuccess = false;
+            if(selectedSolution.equals("Eksik verilerin bulunduğu satırları sil")){
+                Integer[] indexesAsObj = IDARE.getIDARE().getIndexesOfEmptyCellsOnColumn(currentColIndex);
+                int[] rowIndexes = new int[indexesAsObj.length];
+                for(int sayac = 0; sayac < rowIndexes.length; sayac++){
+                    rowIndexes[sayac] = indexesAsObj[sayac];
+                }
+                isSuccess = IDARE.getIDARE().requestDeleteRows(rowIndexes);
+            }
+            else{
+                isSuccess = IDARE.getIDARE().requestFillEmptiesOnColumn(currentColIndex, selectedSolution, value);
+            }
+             
             if(isSuccess)
                 pnl.setColData(IDARE.getIDARE().getColumnData(currentColName), currentColName, dType);
             System.err.println("isSuccessful . " + isSuccess);

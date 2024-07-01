@@ -134,6 +134,7 @@ public class DataB {
     public ArrayList<String> getLiInterestingOnWrongDataForNumerical(){
         if(liInterestingOnWrongDataForNumerical == null){
             liInterestingOnWrongDataForNumerical = new ArrayList<String>();
+            liInterestingOnWrongDataForNumerical.add("Eksik verilerin bulunduğu satırları sil");
             liInterestingOnWrongDataForNumerical.add("Ortalama ile doldur");
             liInterestingOnWrongDataForNumerical.add("En yüksek değerle doldur");
             liInterestingOnWrongDataForNumerical.add("En düşük değerle doldur");
@@ -145,6 +146,7 @@ public class DataB {
     public ArrayList<String> getLiInterestingOnWrongDataForStringType(){
         if(liInterestingOnWrongDataForStringType == null){
             liInterestingOnWrongDataForStringType = new ArrayList<String>();
+            liInterestingOnWrongDataForStringType.add("Eksik verilerin bulunduğu satırları sil");
             liInterestingOnWrongDataForStringType.add("Boş metin(\"\") ile doldur");
             liInterestingOnWrongDataForStringType.add("En çok tekrar eden değerle doldur");
             liInterestingOnWrongDataForStringType.add("\"null\" ifâdesiyle doldur");
