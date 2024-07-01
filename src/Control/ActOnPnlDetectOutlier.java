@@ -35,10 +35,12 @@ public class ActOnPnlDetectOutlier implements ActionListener, ListSelectionListe
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == pnl.getBtnDeleteOutliers()){
-            Object[] outliersRemoved = detector.setNullOutliersDependPercentValue(selectedSolution, percentValue);
-            if(saveWithIDARE(outliersRemoved)){
-                pnl.setColData(outliersRemoved, pnl.getTblColData().getColumnName(0), dType);
-                detector.setValues(outliersRemoved);
+//            Object[] outliersRemoved = detector.setNullOutliersDependPercentValue(selectedSolution, percentValue);// Veri setinin ilgili değerlere 'null' atanmış hâli
+            int[] rowIndexes = detector.getOutlierIndexesDependPercentValue(selectedSolution, percentValue);
+            Object[] outliersDeleted = MatrixFunctions.deleteSelectedMembers(detector.getValues(), rowIndexes, Object[].class);
+            if(saveWithIDARE(rowIndexes)){
+                pnl.setColData(outliersDeleted, pnl.getTblColData().getColumnName(0), dType);
+                detector.setValues(outliersDeleted);
                 pnl.getSpinRate().setValue(0.0);
                 countOfOutliers = 0;
                 pnl.updateBtnRowNumber();
@@ -99,8 +101,11 @@ public class ActOnPnlDetectOutlier implements ActionListener, ListSelectionListe
         }
         return null;
     }
-    private boolean saveWithIDARE(Object[] outliersRemoved){
-        return IDARE.getIDARE().requestSetColumnData(outliersRemoved, dType, colIndex);
+    /*private boolean saveWithIDARE(Object[] outliersRemoved){
+        return IDARE.getIDARE().requestSetColumnData(outliersRemoved, dType, colIndex);// İlgili değerleri 'null' yapıyor
+    }*/
+    private boolean saveWithIDARE(int[] rowIndexesToDelete){
+        return IDARE.getIDARE().requestDeleteRows(rowIndexesToDelete);
     }
 
 //ERİŞİM YÖNTEMLERİ:

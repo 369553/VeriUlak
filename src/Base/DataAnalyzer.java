@@ -1274,7 +1274,7 @@ public class DataAnalyzer{
         }
         return value;
     }
-    private void deleteRows(int[] rowNumbers){
+    public void deleteRows(int[] rowNumbers){
         int[] howManyCellAreEmptyOnAffectedCol = new int[colCount];
 //        isEmptyRatesIsUpdate = false;// Boş veri oranı değerleri taze değil, olarak işâretlendi
         for(int sayac = 0; sayac < rowNumbers.length; sayac++){
@@ -1304,6 +1304,8 @@ public class DataAnalyzer{
             }
         }
         isCalculatedCouldCategorical = false;
+        isColumnDetailsIsUpdate = false;
+        isStatisticIsUpdate = MatrixFunctions.produceBooleanArray(colCount, false);
     }
     public void deleteCols(int[] colIndexes){
         int[] howManyCellAreEmptyOnAffectedRow = new int[rowCount];

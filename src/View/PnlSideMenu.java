@@ -134,5 +134,7 @@ public class PnlSideMenu extends JPanel implements IPanel{
         }
         return pnlManp;
     }
-    
+    public int getColumnIndex(){
+        return getAct().getColNumber();
+    }
 }

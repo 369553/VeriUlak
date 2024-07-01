@@ -159,6 +159,24 @@ public class IDARE implements ActionListener{
         }
         return isSuccess;
     }
+    public boolean requestDeleteRows(int[] rowIndexes){
+        if(rowIndexes == null)
+            return false;
+        getAnalyzer().deleteRows(rowIndexes);
+        {// TETİKLEMELER:
+            getLastProccessInfo().clear();
+            getLastDataPack().clear();
+            lastProccessInfo.put("processType", "deleteRows");
+            int colIndex = ((PnlSideMenu) guiIDARE.getSM()).getColumnIndex();
+            lastProccessInfo.put("colNumber", colIndex);
+            lastDataPack = (HashMap<String, Object>) getAnalyzer().getColumnDetails(colIndex).clone();
+            lastDataPack.put("data", getAnalyzer().getData());
+            lastDataPack.put("statistic", analyzer.getStatisticForColumn(colIndex));
+            guiIDARE.updateDataOnActivePanels();
+            triggerForSecondMenu(colIndex);
+        }
+        return true;
+    }
     public boolean requestChangingNameOfColumn(String oldName, String newName){
         boolean isSuccess = analyzer.setColumnName(oldName, newName);
         if(isSuccess){

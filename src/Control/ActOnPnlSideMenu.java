@@ -232,7 +232,14 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
             if(this.colNumber == colNumber){
                 this.dataPack = IDARE.getIDARE().getLastDataPack();
                 updateDataFor();
-            } 
+            }
+        }
+        else if(processType.equals("deleteRows")){
+            int colNumber = (int) IDARE.getIDARE().getLastProccessInfo().get("colNumber");
+            if(this.colNumber == colNumber){
+                this.dataPack = IDARE.getIDARE().getLastDataPack();
+                updateDataFor();
+            }
         }
     }
     public void updateDataFor(){
@@ -317,7 +324,10 @@ public class ActOnPnlSideMenu implements ActionListener, KeyListener{
     }
 
 //ERİŞİM YÖNTEMLERİ:
-    public boolean getIsNumber(){
+    public int getColNumber(){
+        return colNumber;
+    }
+    public boolean getIsNumber() {
         return isNumber;
     }
     public HashMap<String, Object> getDataPack(){
